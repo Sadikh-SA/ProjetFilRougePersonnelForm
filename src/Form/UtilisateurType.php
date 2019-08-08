@@ -13,18 +13,15 @@ class UtilisateurType extends AbstractType
     {
         $builder
             ->add('username')
-            ->add('roles')
             ->add('password')
             ->add('nom')
             ->add('prenom')
             ->add('adresse')
             ->add('email')
             ->add('tel')
-            ->add('statut')
             ->add('profil')
-            ->add('dateCreation')
-            ->add('partenaire')
-            ->add('compte')
+            // ->add('partenaire')
+            // ->add('compte')
         ;
     }
 
@@ -32,6 +29,7 @@ class UtilisateurType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Utilisateur::class,
+            'csrf_protection' =>false
         ]);
     }
 }

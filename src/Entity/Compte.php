@@ -14,7 +14,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ApiResource()
  * @ORM\Entity(repositoryClass="App\Repository\CompteRepository")
  * @UniqueEntity(
- *     fields={"numerCompte"},
+ *     fields={"numeroCompte"},
  *     message="Ce compte existe déja existe déja."
  * )
  */

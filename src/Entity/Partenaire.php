@@ -56,6 +56,11 @@ class Partenaire
      */
     private $utilisateurs;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $statut;
+
     public function __construct()
     {
         $this->comptes = new ArrayCollection();
@@ -173,6 +178,18 @@ class Partenaire
                 $utilisateur->setPartenaire(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStatut(): ?bool
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(bool $statut): self
+    {
+        $this->statut = $statut;
 
         return $this;
     }

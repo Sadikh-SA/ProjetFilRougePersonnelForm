@@ -8,6 +8,11 @@
 return [
     false, // $matchHost
     [ // $staticRoutes
+        '/filrouge/compte/depot/lister' => [[['_route' => 'compte_depot', '_controller' => 'App\\Controller\\CompteDepotController::index'], null, null, null, false, false, null]],
+        '/filrouge/lister/user' => [[['_route' => 'lister_user', '_controller' => 'App\\Controller\\FilRougeController::index'], null, null, null, false, false, null]],
+        '/filrouge/ajouter/partenaire' => [[['_route' => 'ajouter_les_3', '_controller' => 'App\\Controller\\FilRougeController::ajout'], null, ['POST' => 0], null, false, false, null]],
+        '/filrouge/ajoutprofil' => [[['_route' => 'profil', '_controller' => 'App\\Controller\\FilRougeController::NewProfil'], null, ['POST' => 0], null, false, false, null]],
+        '/filrouge/login' => [[['_route' => 'login', '_controller' => 'App\\Controller\\FilRougeController::login'], null, ['POST' => 0], null, false, false, null]],
     ],
     [ // $regexpList
         0 => '{^(?'
@@ -37,12 +42,22 @@ return [
                                 .')'
                             .')'
                         .')'
-                        .'|partenaires(?'
-                            .'|(?:\\.([^/]++))?(?'
-                                .'|(*:339)'
+                        .'|p(?'
+                            .'|artenaires(?'
+                                .'|(?:\\.([^/]++))?(?'
+                                    .'|(*:342)'
+                                .')'
+                                .'|/([^/\\.]++)(?:\\.([^/]++))?(?'
+                                    .'|(*:380)'
+                                .')'
                             .')'
-                            .'|/([^/\\.]++)(?:\\.([^/]++))?(?'
-                                .'|(*:377)'
+                            .'|rofils(?'
+                                .'|(?:\\.([^/]++))?(?'
+                                    .'|(*:417)'
+                                .')'
+                                .'|/([^/\\.]++)(?:\\.([^/]++))?(?'
+                                    .'|(*:455)'
+                                .')'
                             .')'
                         .')'
                     .')'
@@ -72,14 +87,23 @@ return [
             [['_route' => 'api_comptes_delete_item', '_controller' => 'api_platform.action.delete_item', '_format' => null, '_api_resource_class' => 'App\\Entity\\Compte', '_api_item_operation_name' => 'delete'], ['id', '_format'], ['DELETE' => 0], null, false, true, null],
             [['_route' => 'api_comptes_put_item', '_controller' => 'api_platform.action.put_item', '_format' => null, '_api_resource_class' => 'App\\Entity\\Compte', '_api_item_operation_name' => 'put'], ['id', '_format'], ['PUT' => 0], null, false, true, null],
         ],
-        339 => [
+        342 => [
             [['_route' => 'api_partenaires_get_collection', '_controller' => 'api_platform.action.get_collection', '_format' => null, '_api_resource_class' => 'App\\Entity\\Partenaire', '_api_collection_operation_name' => 'get'], ['_format'], ['GET' => 0], null, false, true, null],
             [['_route' => 'api_partenaires_post_collection', '_controller' => 'api_platform.action.post_collection', '_format' => null, '_api_resource_class' => 'App\\Entity\\Partenaire', '_api_collection_operation_name' => 'post'], ['_format'], ['POST' => 0], null, false, true, null],
         ],
-        377 => [
+        380 => [
             [['_route' => 'api_partenaires_get_item', '_controller' => 'api_platform.action.get_item', '_format' => null, '_api_resource_class' => 'App\\Entity\\Partenaire', '_api_item_operation_name' => 'get'], ['id', '_format'], ['GET' => 0], null, false, true, null],
             [['_route' => 'api_partenaires_delete_item', '_controller' => 'api_platform.action.delete_item', '_format' => null, '_api_resource_class' => 'App\\Entity\\Partenaire', '_api_item_operation_name' => 'delete'], ['id', '_format'], ['DELETE' => 0], null, false, true, null],
             [['_route' => 'api_partenaires_put_item', '_controller' => 'api_platform.action.put_item', '_format' => null, '_api_resource_class' => 'App\\Entity\\Partenaire', '_api_item_operation_name' => 'put'], ['id', '_format'], ['PUT' => 0], null, false, true, null],
+        ],
+        417 => [
+            [['_route' => 'api_profils_get_collection', '_controller' => 'api_platform.action.get_collection', '_format' => null, '_api_resource_class' => 'App\\Entity\\Profil', '_api_collection_operation_name' => 'get'], ['_format'], ['GET' => 0], null, false, true, null],
+            [['_route' => 'api_profils_post_collection', '_controller' => 'api_platform.action.post_collection', '_format' => null, '_api_resource_class' => 'App\\Entity\\Profil', '_api_collection_operation_name' => 'post'], ['_format'], ['POST' => 0], null, false, true, null],
+        ],
+        455 => [
+            [['_route' => 'api_profils_get_item', '_controller' => 'api_platform.action.get_item', '_format' => null, '_api_resource_class' => 'App\\Entity\\Profil', '_api_item_operation_name' => 'get'], ['id', '_format'], ['GET' => 0], null, false, true, null],
+            [['_route' => 'api_profils_delete_item', '_controller' => 'api_platform.action.delete_item', '_format' => null, '_api_resource_class' => 'App\\Entity\\Profil', '_api_item_operation_name' => 'delete'], ['id', '_format'], ['DELETE' => 0], null, false, true, null],
+            [['_route' => 'api_profils_put_item', '_controller' => 'api_platform.action.put_item', '_format' => null, '_api_resource_class' => 'App\\Entity\\Profil', '_api_item_operation_name' => 'put'], ['id', '_format'], ['PUT' => 0], null, false, true, null],
             [null, null, null, null, false, false, 0],
         ],
     ],
