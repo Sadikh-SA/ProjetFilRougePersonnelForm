@@ -4,7 +4,8 @@
 
 return [
     '_twig_error_test' => [['code', '_format'], ['_controller' => 'twig.controller.preview_error::previewErrorPageAction', '_format' => 'html'], ['code' => '\\d+'], [['variable', '.', '[^/]++', '_format', true], ['variable', '/', '\\d+', 'code', true], ['text', '/_error']], [], []],
-    'compte_depot' => [[], ['_controller' => 'App\\Controller\\CompteDepotController::index'], [], [['text', '/filrouge/compte/depot/lister']], [], []],
+    'compte_ajout' => [[], ['_controller' => 'App\\Controller\\CompteDepotController::creerPartenaire'], [], [['text', '/filrouge/partenaire/ajouter']], [], []],
+    'faire_depot' => [[], ['_controller' => 'App\\Controller\\CompteDepotController::fairedepot'], [], [['text', '/filrouge/fairedepot']], [], []],
     'lister_user' => [[], ['_controller' => 'App\\Controller\\FilRougeController::index'], [], [['text', '/filrouge/lister/user']], [], []],
     'ajouter_les_3' => [[], ['_controller' => 'App\\Controller\\FilRougeController::ajout'], [], [['text', '/filrouge/ajouter/partenaire']], [], []],
     'profil' => [[], ['_controller' => 'App\\Controller\\FilRougeController::NewProfil'], [], [['text', '/filrouge/ajoutprofil']], [], []],

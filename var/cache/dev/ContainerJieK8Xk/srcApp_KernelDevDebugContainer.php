@@ -1,6 +1,6 @@
 <?php
 
-namespace ContainerHTGRwx4;
+namespace ContainerJieK8Xk;
 
 use Symfony\Component\DependencyInjection\Argument\RewindableGenerator;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -1434,6 +1434,7 @@ class srcApp_KernelDevDebugContainer extends Container
     {
         $a = new \FOS\RestBundle\Negotiation\FormatNegotiator(($this->services['request_stack'] ?? ($this->services['request_stack'] = new \Symfony\Component\HttpFoundation\RequestStack())));
         $a->add(new \Symfony\Component\HttpFoundation\RequestMatcher('^/filrouge', NULL, NULL, NULL, []), ['prefer_extension' => '2.0', 'fallback_format' => 'json', 'priorities' => [0 => 'json'], 'methods' => NULL, 'attributes' => [], 'stop' => false]);
+        $a->add(new \Symfony\Component\HttpFoundation\RequestMatcher('^/', NULL, NULL, NULL, []), ['priorities' => [0 => 'html', 1 => '*/*'], 'fallback_format' => NULL, 'prefer_extension' => '2.0', 'methods' => NULL, 'attributes' => [], 'stop' => false]);
 
         return $this->privates['fos_rest.format_listener'] = new \FOS\RestBundle\EventListener\FormatListener($a);
     }

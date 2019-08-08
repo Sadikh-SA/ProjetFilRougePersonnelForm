@@ -139,7 +139,7 @@ class FilRougeController extends AbstractFOSRestController
     /**
      * @Route("/ajoutprofil", name="profil", methods={"POST"})
      */
-    public function NewProfil(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    public function NewProfil(Request $request)
     {
         $values = $request->request->all();
         $connect = $this->getDoctrine()->getManager();

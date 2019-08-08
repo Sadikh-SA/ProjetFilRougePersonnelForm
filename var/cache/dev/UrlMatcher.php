@@ -8,7 +8,8 @@
 return [
     false, // $matchHost
     [ // $staticRoutes
-        '/filrouge/compte/depot/lister' => [[['_route' => 'compte_depot', '_controller' => 'App\\Controller\\CompteDepotController::index'], null, null, null, false, false, null]],
+        '/filrouge/partenaire/ajouter' => [[['_route' => 'compte_ajout', '_controller' => 'App\\Controller\\CompteDepotController::creerPartenaire'], null, ['POST' => 0], null, false, false, null]],
+        '/filrouge/fairedepot' => [[['_route' => 'faire_depot', '_controller' => 'App\\Controller\\CompteDepotController::fairedepot'], null, ['POST' => 0], null, false, false, null]],
         '/filrouge/lister/user' => [[['_route' => 'lister_user', '_controller' => 'App\\Controller\\FilRougeController::index'], null, null, null, false, false, null]],
         '/filrouge/ajouter/partenaire' => [[['_route' => 'ajouter_les_3', '_controller' => 'App\\Controller\\FilRougeController::ajout'], null, ['POST' => 0], null, false, false, null]],
         '/filrouge/ajoutprofil' => [[['_route' => 'profil', '_controller' => 'App\\Controller\\FilRougeController::NewProfil'], null, ['POST' => 0], null, false, false, null]],
