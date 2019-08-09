@@ -59,7 +59,6 @@ class FilRougeController extends AbstractFOSRestController
         $form = $this->createForm(UtilisateurType::class, $user);
         $form->submit($values);
         $errors = [];
-        $error = [];
         $roleadminpartenaire="ROLE_Admin-Partenaire";
         $rolepartenaire="ROLE_Partenaire";
         $user->setPassword($passwordEncoder->encodePassword($user, $form->get('password')->getData()));
@@ -70,9 +69,13 @@ class FilRougeController extends AbstractFOSRestController
             $user->setRoles([$roleadminpartenaire]);
             $idpartenaire = $this->getUser();
             $idcompte = $compteRepository->find($values['compte']);
-            if (($idpartenaire->getRoles()[0]!=$roleadminpartenaire || $idpartenaire->getRoles()[0]!=$rolepartenaire) || $idcompte==NULL) {
-                $error[]= "Vous ne pouvez pas créer un Admin-Partenaire: Pas d'accès";
-                $errors[] = "Ce Compte n'existe pas";
+            if (($idpartenaire->getRoles()[0] !=$roleadminpartenaire && $idpartenaire->getRoles()[0]!=$rolepartenaire) || $idcompte==NULL) {
+                if ($idcompte==NULL) {
+                    $errors[] = "Ce Compte n'existe pas";
+                } else {
+                    $errors[]= "Vous ne pouvez pas créer un Admin-Partenaire: Pas d'accès";
+                }
+                
             }
             $user->setPartenaire($idpartenaire->getPartenaire());
             $user->setCompte($idcompte);
@@ -85,17 +88,20 @@ class FilRougeController extends AbstractFOSRestController
             $user->setRoles(["ROLE_Utilisateur"]);
             $idpartenaire = $this->getUser();
             $idcompte = $compteRepository->find($values['compte']);
-            if ($idcompte==NULL || ($idpartenaire->getRoles()[0]!=$roleadminpartenaire || $idpartenaire->getRoles()[0]!=$rolepartenaire)) {
-                $errors[] = "Ce Compte n'existe pas";
-                $error[]= "Vous ne pouvez pas créer un Admin-Partenaire: Pas d'accès";
+            if ($idcompte==NULL || ($idpartenaire->getRoles()[0]!=$roleadminpartenaire && $idpartenaire->getRoles()[0]!=$rolepartenaire)) {
+                if ($idcompte==NULL) {
+                    $errors[] = "Ce Compte n'existe pas";
+                } else {
+                    $errors[]= "Vous ne pouvez pas créer un Admin-Partenaire: Pas d'accès";
+                }
             }
             $user->setPartenaire($idpartenaire->getPartenaire());
             $user->setCompte($idcompte);
         }
         elseif ($profil->getLibelle()=="Partenaire") {
             $iduser = $this->getUser();
-            if ($iduser->getRoles()[0]!="ROLE_Super-Admin" || $iduser->getRoles()[0]!="ROLE_Wari") {
-                $error[]= "Vous ne pouvez pas créer Partenaire car vous n'êtes pas super-admin: Pas d'accès";
+            if ($iduser->getRoles()[0]!="ROLE_Super-Admin" && $iduser->getRoles()[0]!="ROLE_Wari") {
+                $errors[]= "Vous ne pouvez pas créer Partenaire car vous n'êtes pas super-admin: Pas d'accès";
             }
             $user->setRoles(["ROLE_Partenaire"]);
             #AJOUTER NOUVEAU PARTENAIRE
@@ -115,14 +121,14 @@ class FilRougeController extends AbstractFOSRestController
             $em->persist($compte);
             $user->setCompte($compte);
         }
-        if (!$errors && !$error) {
+        if (!$errors) {
             $user->setStatut(true);
             $user->setDateCreation(new \DateTime());
             $em->persist($user);
             $em->flush();
                 return $this->json([
                     'code' => 200,
-                    'message' =>'Utilisateur Inscrit'
+                    'message4' =>'Utilisateur Inscrit'
                 ]);
         }
         elseif ($errors) {
@@ -130,9 +136,6 @@ class FilRougeController extends AbstractFOSRestController
                 'errors' => $errors
             ], 400);
         }
-        return $this->json([
-            'error' => $error
-        ], 400);
         
     }
 
@@ -181,14 +184,14 @@ class FilRougeController extends AbstractFOSRestController
         if (!$isValid || !$user) {
             $data = [
                 'code' => 401,
-                'messag' => 'Username ou Mot de Passe incorrecte'
+                'message' => 'Username ou Mot de Passe incorrecte'
             ];
             return new JsonResponse($data,300);
         }
         if (!$user->getStatut()) {
             $data = [
                 'status135' => 404,
-                'message135' => 'Ce compte est Bloqué'
+                'message135' => 'Ce compte est Bloqué: Fait appel à ton Propriétaire'
             ];
             return new JsonResponse($data,404);
             

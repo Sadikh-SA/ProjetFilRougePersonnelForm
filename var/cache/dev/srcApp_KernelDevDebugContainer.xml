@@ -403,6 +403,7 @@
     <service id="App\Controller\CompteDepotController" class="App\Controller\CompteDepotController" public="true" autowire="true" autoconfigure="true">
       <tag name="controller.service_arguments"/>
       <tag name="container.service_subscriber"/>
+      <argument type="service" id="security.user_password_encoder.generic"/>
       <call method="setContainer">
         <argument type="service" id=".service_locator.4RGsIK0.App\Controller\CompteDepotController"/>
       </call>
@@ -5020,6 +5021,32 @@
         <argument key="compteRepository" type="service" id="App\Repository\CompteRepository"/>
       </argument>
     </service>
+    <service id=".service_locator.n63jPxA" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="entityManager" type="service" id="doctrine.orm.default_entity_manager"/>
+        <argument key="passwordEncoder" type="service" id="security.user_password_encoder.generic"/>
+        <argument key="profilRepository" type="service" id="App\Repository\ProfilRepository"/>
+      </argument>
+    </service>
+    <service id=".service_locator.bU5WbX_" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="entityManager" type="service" id="doctrine.orm.default_entity_manager"/>
+      </argument>
+    </service>
+    <service id=".service_locator.hIMNJyo" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="entityManager" type="service" id="doctrine.orm.default_entity_manager"/>
+      </argument>
+    </service>
+    <service id=".service_locator.EEnNkzT" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="entityManager" type="service" id="doctrine.orm.default_entity_manager"/>
+      </argument>
+    </service>
     <service id=".service_locator.l2alLEu" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -5041,17 +5068,25 @@
         <argument key="JWTEncoder" type="service" id="lexik_jwt_authentication.encoder.lcobucci"/>
       </argument>
     </service>
-    <service id=".service_locator.sCFZUq9" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+    <service id=".service_locator.Ec_wRe9" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection">
-        <argument key="App\Controller\CompteDepotController::creercompte" type="service" id=".service_locator.0VWx6lC"/>
-        <argument key="App\Controller\CompteDepotController::fairedepot" type="service" id=".service_locator.JfrEn5y"/>
+        <argument key="App\Controller\CompteDepotController::Update" type="service" id=".service_locator.n63jPxA"/>
+        <argument key="App\Controller\CompteDepotController::UpdateCompte" type="service" id=".service_locator.bU5WbX_"/>
+        <argument key="App\Controller\CompteDepotController::UpdateDepot" type="service" id=".service_locator.hIMNJyo"/>
+        <argument key="App\Controller\CompteDepotController::UpdatePartenaire" type="service" id=".service_locator.EEnNkzT"/>
+        <argument key="App\Controller\CompteDepotController::creerCompte" type="service" id=".service_locator.0VWx6lC"/>
+        <argument key="App\Controller\CompteDepotController::faireDepot" type="service" id=".service_locator.JfrEn5y"/>
         <argument key="App\Controller\CompteDepotController::setViewHandler" type="service" id=".service_locator.l2alLEu"/>
         <argument key="App\Controller\FilRougeController::ajout" type="service" id=".service_locator.sQJpPfG"/>
         <argument key="App\Controller\FilRougeController::login" type="service" id=".service_locator.0xDS.HG"/>
         <argument key="App\Controller\FilRougeController::setViewHandler" type="service" id=".service_locator.l2alLEu"/>
-        <argument key="App\Controller\CompteDepotController:creercompte" type="service" id=".service_locator.0VWx6lC"/>
-        <argument key="App\Controller\CompteDepotController:fairedepot" type="service" id=".service_locator.JfrEn5y"/>
+        <argument key="App\Controller\CompteDepotController:Update" type="service" id=".service_locator.n63jPxA"/>
+        <argument key="App\Controller\CompteDepotController:UpdateCompte" type="service" id=".service_locator.bU5WbX_"/>
+        <argument key="App\Controller\CompteDepotController:UpdateDepot" type="service" id=".service_locator.hIMNJyo"/>
+        <argument key="App\Controller\CompteDepotController:UpdatePartenaire" type="service" id=".service_locator.EEnNkzT"/>
+        <argument key="App\Controller\CompteDepotController:creerCompte" type="service" id=".service_locator.0VWx6lC"/>
+        <argument key="App\Controller\CompteDepotController:faireDepot" type="service" id=".service_locator.JfrEn5y"/>
         <argument key="App\Controller\CompteDepotController:setViewHandler" type="service" id=".service_locator.l2alLEu"/>
         <argument key="App\Controller\FilRougeController:ajout" type="service" id=".service_locator.sQJpPfG"/>
         <argument key="App\Controller\FilRougeController:login" type="service" id=".service_locator.0xDS.HG"/>
@@ -5333,12 +5368,12 @@
       <argument type="service" id="security.token_storage"/>
     </service>
     <service id="debug.argument_resolver.service.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver" public="false">
-      <argument type="service" id=".service_locator.sCFZUq9"/>
+      <argument type="service" id=".service_locator.Ec_wRe9"/>
     </service>
     <service id="debug.argument_resolver.default.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver" public="false"/>
     <service id="debug.argument_resolver.variadic.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\VariadicValueResolver" public="false"/>
     <service id="debug.argument_resolver.not_tagged_controller.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver" public="false">
-      <argument type="service" id=".service_locator.sCFZUq9"/>
+      <argument type="service" id=".service_locator.Ec_wRe9"/>
     </service>
     <service id="api_platform.swagger.normalizer.api_gateway.inner" class="ApiPlatform\Core\Swagger\Serializer\DocumentationNormalizer" public="false">
       <argument type="service" id="api_platform.metadata.resource.metadata_factory.cached"/>
@@ -5691,7 +5726,7 @@
     <service id="lexik_jwt_authentication.encoder" alias="lexik_jwt_authentication.encoder.lcobucci" public="true"/>
     <service id="Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface" alias="lexik_jwt_authentication.encoder.lcobucci"/>
     <service id="lexik_jwt_authentication.key_loader" alias="lexik_jwt_authentication.key_loader.raw" public="true"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.sCFZUq9"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.Ec_wRe9"/>
     <service id="twig.loader.filesystem" alias="twig.loader.native_filesystem" public="false"/>
     <service id="twig.loader" alias="twig.loader.native_filesystem"/>
     <service id="api_platform.name_converter" alias="serializer.name_converter.metadata_aware"/>
