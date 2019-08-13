@@ -53,14 +53,17 @@ class FilRougeController extends AbstractFOSRestController
      */
     public function ajout(Request $request, UserPasswordEncoderInterface $passwordEncoder, ProfilRepository $profilRepository, PartenaireRepository $partenaireRepository, CompteRepository $compteRepository)
     {
-        $values = $request->request->all();
-        $em = $this->getDoctrine()->getManager();
         $user = new Utilisateur();
         $form = $this->createForm(UtilisateurType::class, $user);
+        $values = $request->request->all();
+        $file= $request->files->all()["imageName"];
         $form->submit($values);
+
+        $em = $this->getDoctrine()->getManager();
         $errors = [];
         $roleadminpartenaire="ROLE_Admin-Partenaire";
         $rolepartenaire="ROLE_Partenaire";
+        $user->setImageFile($file);
         $user->setPassword($passwordEncoder->encodePassword($user, $form->get('password')->getData()));
         $profil = $profilRepository->find($form->get('profil')->getData());
         if (!$profil) {
@@ -75,7 +78,6 @@ class FilRougeController extends AbstractFOSRestController
                 } else {
                     $errors[]= "Vous ne pouvez pas créer un Admin-Partenaire: Pas d'accès";
                 }
-                
             }
             $user->setPartenaire($idpartenaire->getPartenaire());
             $user->setCompte($idcompte);

@@ -7,6 +7,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\HttpFoundation\File\File;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UtilisateurRepository")
@@ -14,6 +17,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     fields={"username", "email", "tel"},
  *     message="Cet Utilisateur ou le numéro de Téléphone ou l'email existe déja."
  * )
+ * @Vich\Uploadable
  */
 class Utilisateur implements UserInterface
 {
@@ -96,6 +100,28 @@ class Utilisateur implements UserInterface
      * @ORM\JoinColumn(nullable=true)
      */
     private $compte;
+
+
+    /**
+     * @Vich\UploadableField(mapping="images", fileNameProperty="imageName")
+     * 
+     * @var File
+     */
+    private $imageFile;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     *
+     * @var string
+     */
+    private $imageName;
+
+    /**
+     * @ORM\Column(type="datetime")
+     *
+     * @var \DateTime
+     */
+    private $updatedAt;
 
     public function __construct()
     {
@@ -324,5 +350,32 @@ class Utilisateur implements UserInterface
         $this->compte = $compte;
 
         return $this;
+    }
+
+     /**
+     * @param File|\Symfony\Component\HttpFoundation\File\UploadedFile $imageFile
+     */
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if ($this->imageFile instanceof UploadedFile) {
+            $this->updatedAt = new \DateTime("now");
+        }
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageName(?string $imageName): void
+    {
+        $this->imageName = $imageName;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
     }
 }
