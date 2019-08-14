@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Commission;
 use App\Entity\Transaction;
 use App\Form\TransactionType;
 use App\Repository\CommissionRepository;
@@ -27,18 +28,31 @@ class TransactionController extends AbstractController
     public function envoyerArgent(Request $request, CommissionRepository $commissionRepository)
     {
         $values = $request->request->all();
+        $tarif = new Commission();
+        $montant = 'montantEnvoyer';
+        $i=0;
         $connect = $this->getDoctrine()->getManager();
         $transaction = new Transaction();
         $form = $this->createForm(TransactionType::class, $transaction);
         $form->submit($values);
         if($form->isSubmitted()){
-            $connect->persist($transaction);
+            $tester=$commissionRepository->findAll();
+            while ($i<count($tester)) {
+                if ($values[$montant]<=$tester[$i]->getBorneSuperieure() && $values[$montant]>=$tester[$i]->getBorneInferieure()) {
+                    //$montant = $tester[$i]->getValeur();
+                    //break;
+                }
+                var_dump($tester[$i]);
+                $i++;
+            }
+            var_dump($tester[1]);die();
             $commission = $commissionRepository->findByValeur($values['commissionTTC']);
             $transaction->setCommissionTTC($commission[0]);
             $transaction->setUtilisateur($this->getUser());
             $transaction->setTotalEnvoyer($values['montantEnvoyer']+$values['commissionTTC']);
             $transaction->setNumeroTransaction(rand(100000000,999999999));
             $transaction->setDateEnvoie(new \DateTime());
+            $connect->persist($transaction);
             $connect->flush();
                 return $this->json([
                     'code' => 200,
@@ -73,13 +87,13 @@ class TransactionController extends AbstractController
             $transaction->setUtilisateur($this->getUser());
             $transaction->setTotalEnvoyer($transaction->getTotalEnvoyer());
             $transaction->setDateRetrait(new \DateTime());
-            $transaction->setMontantRetirer($transaction->getMontantEnvoyer()-$transaction->getCommissionTTC()->getValeur());
+            $transaction->setMontantRetirer($transaction->getTotalEnvoyer() - $transaction->getCommissionTTC()->getValeur());
             $entityManager->persist($transaction);
             $entityManager->flush();
             $data = [
                 'status3' => 200,
                 'message3' => "Le retrait est fait avec succès.",
-                'montant retirer' => $transaction->setMontantRetirer($transaction->getMontantEnvoyer()-$transaction->getCommissionTTC()->getValeur())
+                'montant retirer' => $transaction->getMontantRetirer()
             ];
             return new JsonResponse($data,200);
         }

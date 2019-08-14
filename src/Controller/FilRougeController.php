@@ -66,62 +66,66 @@ class FilRougeController extends AbstractFOSRestController
         $user->setImageFile($file);
         $user->setPassword($passwordEncoder->encodePassword($user, $form->get('password')->getData()));
         $profil = $profilRepository->find($form->get('profil')->getData());
-        if (!$profil) {
-            $errors[] = "Ce Profil n'existe pas";
-        }elseif ($profil->getLibelle()=="Admin-Partenaire") {
-            $user->setRoles([$roleadminpartenaire]);
-            $idpartenaire = $this->getUser();
-            $idcompte = $compteRepository->find($values['compte']);
-            if (($idpartenaire->getRoles()[0] !=$roleadminpartenaire && $idpartenaire->getRoles()[0]!=$rolepartenaire) || $idcompte==NULL) {
-                if ($idcompte==NULL) {
-                    $errors[] = "Ce Compte n'existe pas";
-                } else {
+        switch ($profil->getLibelle()) {
+
+            case 'Admin-Partenaire':
+                $user->setRoles([$roleadminpartenaire]);
+                $idpartenaire = $this->getUser();
+                $idcompte = $compteRepository->find($values['compte']);
+                if (($idpartenaire->getRoles()[0] !=$roleadminpartenaire && $idpartenaire->getRoles()[0]!=$rolepartenaire) || $idcompte==NULL) {
+                    $errors[]= "Vous ne pouvez pas créer un Admin-Partenaire: Pas d'accès";
+                    if ($idcompte==NULL) {
+                        $errors[] = "Ce Compte n'existe pas";
+                    }
+                }
+                $user->setPartenaire($idpartenaire->getPartenaire());
+                $user->setCompte($idcompte);
+                break;
+
+            case 'Super-Admin':
+                $user->setRoles(["ROLE_Super-Admin"]);
+                break;
+
+            case 'Caissier':
+                $user->setRoles(["ROLE_Caissier"]);
+                break;
+            
+            case 'Utilisateur':
+                $user->setRoles(["ROLE_Utilisateur"]);
+                $idpartenaire = $this->getUser();
+                if ($idpartenaire->getRoles()[0]!=$roleadminpartenaire && $idpartenaire->getRoles()[0]!=$rolepartenaire) {
                     $errors[]= "Vous ne pouvez pas créer un Admin-Partenaire: Pas d'accès";
                 }
-            }
-            $user->setPartenaire($idpartenaire->getPartenaire());
-            $user->setCompte($idcompte);
-        }
-        elseif ($profil->getLibelle()=="Super-Admin") {
-            $user->setRoles(["ROLE_Super-Admin"]);
-        }elseif ($profil->getLibelle()=="Caissier") {
-            $user->setRoles(["ROLE_Caissier"]);
-        }elseif ($profil->getLibelle()=="Utilisateur") {
-            $user->setRoles(["ROLE_Utilisateur"]);
-            $idpartenaire = $this->getUser();
-            $idcompte = $compteRepository->find($values['compte']);
-            if ($idcompte==NULL || ($idpartenaire->getRoles()[0]!=$roleadminpartenaire && $idpartenaire->getRoles()[0]!=$rolepartenaire)) {
-                if ($idcompte==NULL) {
-                    $errors[] = "Ce Compte n'existe pas";
-                } else {
-                    $errors[]= "Vous ne pouvez pas créer un Admin-Partenaire: Pas d'accès";
+                $user->setPartenaire($idpartenaire->getPartenaire());
+                break;
+
+            case 'Partenaire':
+                $iduser = $this->getUser();
+                if ($iduser->getRoles()[0]!="ROLE_Super-Admin" && $iduser->getRoles()[0]!="ROLE_Wari") {
+                    $errors[]= "Vous ne pouvez pas créer Partenaire car vous n'êtes pas super-admin: Pas d'accès";
                 }
-            }
-            $user->setPartenaire($idpartenaire->getPartenaire());
-            $user->setCompte($idcompte);
-        }
-        elseif ($profil->getLibelle()=="Partenaire") {
-            $iduser = $this->getUser();
-            if ($iduser->getRoles()[0]!="ROLE_Super-Admin" && $iduser->getRoles()[0]!="ROLE_Wari") {
-                $errors[]= "Vous ne pouvez pas créer Partenaire car vous n'êtes pas super-admin: Pas d'accès";
-            }
-            $user->setRoles(["ROLE_Partenaire"]);
-            #AJOUTER NOUVEAU PARTENAIRE
-            $partenaire = new Partenaire();
-            $form1 = $this->createForm(PartenaireType::class, $partenaire);
-            $form1->submit($values);
-            $partenaire->setDateCreation(new \DateTime());
-            $partenaire->setStatut(true);
-            $em->persist($partenaire);
-            $user->setPartenaire($partenaire);
-            #AJOUTER NOUVEAU COMPTE POUR CE PARTENAIRE
-            $compte = new Compte();
-            $form2 = $this->createForm(CompteType::class, $compte);
-            $form2->submit($values);
-            $compte->setDateCreation(new \DateTime());
-            $compte->setPartenaire($partenaire);
-            $em->persist($compte);
-            $user->setCompte($compte);
+                $user->setRoles(["ROLE_Partenaire"]);
+                #AJOUTER NOUVEAU PARTENAIRE
+                $partenaire = new Partenaire();
+                $form1 = $this->createForm(PartenaireType::class, $partenaire);
+                $form1->submit($values);
+                $partenaire->setDateCreation(new \DateTime());
+                $partenaire->setStatut(true);
+                $em->persist($partenaire);
+                $user->setPartenaire($partenaire);
+                #AJOUTER NOUVEAU COMPTE POUR CE PARTENAIRE
+                $compte = new Compte();
+                $form2 = $this->createForm(CompteType::class, $compte);
+                $form2->submit($values);
+                $compte->setDateCreation(new \DateTime());
+                $compte->setPartenaire($partenaire);
+                $em->persist($compte);
+                $user->setCompte($compte);
+                break;
+
+            default:
+                $errors[] = "Ce Profil n'existe pas";
+                break;
         }
         if (!$errors) {
             $user->setStatut(true);
@@ -133,11 +137,9 @@ class FilRougeController extends AbstractFOSRestController
                     'message4' =>'Utilisateur Inscrit'
                 ]);
         }
-        elseif ($errors) {
-            return $this->json([
-                'errors' => $errors
-            ], 400);
-        }
+        return $this->json([
+            'errors' => $errors
+        ], 400);
         
     }
 

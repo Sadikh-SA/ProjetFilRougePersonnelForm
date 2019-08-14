@@ -40,10 +40,10 @@ class TransactionType extends AbstractType
             //     'class' => Utilisateur::class,
             //     'choice_label' => 'utilisateur'
             // ])
-            ->add('commissionTTC', EntityType::class,[
-                'class' => Commission::class,
-                'choice_label' => 'commissionTTC'
-            ])
+            // ->add('commissionTTC', EntityType::class,[
+            //     'class' => Commission::class,
+            //     'choice_label' => 'commissionTTC'
+            // ])
         ;
     }
 
