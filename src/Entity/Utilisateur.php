@@ -123,9 +123,15 @@ class Utilisateur implements UserInterface
      */
     private $updatedAt;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="utilisateur")
+     */
+    private $transactions;
+
     public function __construct()
     {
         $this->depots = new ArrayCollection();
+        $this->transactions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -377,5 +383,36 @@ class Utilisateur implements UserInterface
     public function getImageName(): ?string
     {
         return $this->imageName;
+    }
+
+    /**
+     * @return Collection|Transaction[]
+     */
+    public function getTransactions(): Collection
+    {
+        return $this->transactions;
+    }
+
+    public function addTransaction(Transaction $transaction): self
+    {
+        if (!$this->transactions->contains($transaction)) {
+            $this->transactions[] = $transaction;
+            $transaction->setUtilisateur($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransaction(Transaction $transaction): self
+    {
+        if ($this->transactions->contains($transaction)) {
+            $this->transactions->removeElement($transaction);
+            // set the owning side to null (unless already changed)
+            if ($transaction->getUtilisateur() === $this) {
+                $transaction->setUtilisateur(null);
+            }
+        }
+
+        return $this;
     }
 }

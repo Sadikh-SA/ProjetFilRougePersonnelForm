@@ -81,17 +81,39 @@ class Transaction
     /**
      * @ORM\Column(type="float")
      */
-    private $commissionTTC;
-
-    /**
-     * @ORM\Column(type="float")
-     */
     private $totalEnvoyer;
 
     /**
      * @ORM\Column(type="float", nullable=true)
      */
     private $montantRetirer;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $CNIBeneficiaire;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Utilisateur", inversedBy="transactions")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $utilisateur;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $dateEnvoie;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $dateRetrait;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Commission", inversedBy="transactions")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $commissionTTC;
 
     public function getId(): ?int
     {
@@ -230,18 +252,6 @@ class Transaction
         return $this;
     }
 
-    public function getCommissionTTC(): ?float
-    {
-        return $this->commissionTTC;
-    }
-
-    public function setCommissionTTC(float $commissionTTC): self
-    {
-        $this->commissionTTC = $commissionTTC;
-
-        return $this;
-    }
-
     public function getTotalEnvoyer(): ?float
     {
         return $this->totalEnvoyer;
@@ -262,6 +272,66 @@ class Transaction
     public function setMontantRetirer(?float $montantRetirer): self
     {
         $this->montantRetirer = $montantRetirer;
+
+        return $this;
+    }
+
+    public function getCNIBeneficiaire(): ?float
+    {
+        return $this->CNIBeneficiaire;
+    }
+
+    public function setCNIBeneficiaire(?float $CNIBeneficiaire): self
+    {
+        $this->CNIBeneficiaire = $CNIBeneficiaire;
+
+        return $this;
+    }
+
+    public function getUtilisateur(): ?Utilisateur
+    {
+        return $this->utilisateur;
+    }
+
+    public function setUtilisateur(?Utilisateur $utilisateur): self
+    {
+        $this->utilisateur = $utilisateur;
+
+        return $this;
+    }
+
+    public function getDateEnvoie(): ?\DateTimeInterface
+    {
+        return $this->dateEnvoie;
+    }
+
+    public function setDateEnvoie(\DateTimeInterface $dateEnvoie): self
+    {
+        $this->dateEnvoie = $dateEnvoie;
+
+        return $this;
+    }
+
+    public function getDateRetrait(): ?\DateTimeInterface
+    {
+        return $this->dateRetrait;
+    }
+
+    public function setDateRetrait(?\DateTimeInterface $dateRetrait): self
+    {
+        $this->dateRetrait = $dateRetrait;
+
+        return $this;
+    }
+
+    public function getCommissionTTC(): ?Commission
+    {
+        return $this->commissionTTC;
+    }
+
+    public function setCommissionTTC(?Commission $commissionTTC): self
+    {
+        $this->commissionTTC = $commissionTTC;
 
         return $this;
     }

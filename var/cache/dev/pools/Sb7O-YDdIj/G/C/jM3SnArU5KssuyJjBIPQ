@@ -27,7 +27,7 @@ return $getExpiry ? PHP_INT_MAX : Hydrator::hydrate(
                 1 => 'ROLE_Caissier',
             ],
             'message' => [
-                1 => 'Seul le caissier est habilité à effectuer cette transaction',
+                1 => 'Seul le caissier est habilité à effectuer cet Dépot',
             ],
         ],
     ],

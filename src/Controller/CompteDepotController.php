@@ -91,7 +91,7 @@ class CompteDepotController extends AbstractFOSRestController
 
     /**
      * @Route("/fairedepot", name="faire_depot", methods={"POST"})
-     * @IsGranted("ROLE_Caissier", message="Seul le caissier est habilité à effectuer cette transaction")
+     * @IsGranted("ROLE_Caissier", message="Seul le caissier est habilité à effectuer cet Dépot")
      */
     public function faireDepot(Request $request, CompteRepository $compteRepository)
     {
