@@ -39,15 +39,14 @@ class TransactionController extends AbstractController
             $tester=$commissionRepository->findAll();
             while ($i<count($tester)) {
                 if ($values[$montant]<=$tester[$i]->getBorneSuperieure() && $values[$montant]>=$tester[$i]->getBorneInferieure()) {
-                    //$montant = $tester[$i]->getValeur();
-                    //break;
+                    $montant = $tester[$i]->getValeur();
+                    break;
                 }
                 var_dump($tester[$i]);
                 $i++;
             }
             var_dump($tester[1]);die();
-            $commission = $commissionRepository->findByValeur($values['commissionTTC']);
-            $transaction->setCommissionTTC($commission[0]);
+            $transaction->setCommissionTTC($montant);
             $transaction->setUtilisateur($this->getUser());
             $transaction->setTotalEnvoyer($values['montantEnvoyer']+$values['commissionTTC']);
             $transaction->setNumeroTransaction(rand(100000000,999999999));
