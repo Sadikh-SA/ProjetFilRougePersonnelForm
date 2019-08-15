@@ -28,7 +28,6 @@ class TransactionController extends AbstractController
     public function envoyerArgent(Request $request, CommissionRepository $commissionRepository)
     {
         $values = $request->request->all();
-        $tarif = new Commission();
         $montant = 'montantEnvoyer';
         $i=0;
         $connect = $this->getDoctrine()->getManager();
@@ -55,7 +54,7 @@ class TransactionController extends AbstractController
             $connect->flush();
                 return $this->json([
                     'code' => 200,
-                    'message' =>'Envoie Argent Fait avec succès'
+                    'message' =>'Envoie Argent fait avec succès'
                 ]);
         }
         return $this->json([

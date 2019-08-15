@@ -71,7 +71,7 @@ class FilRougeController extends AbstractFOSRestController
             case 'Admin-Partenaire':
                 $user->setRoles([$roleadminpartenaire]);
                 $idpartenaire = $this->getUser();
-                $idcompte = $compteRepository->find($values['compte']);
+                $idcompte = $compteRepository->findByNumeroCompte($values['compte']);
                 if (($idpartenaire->getRoles()[0] !=$roleadminpartenaire && $idpartenaire->getRoles()[0]!=$rolepartenaire) || $idcompte==NULL) {
                     $errors[]= "Vous ne pouvez pas créer un Admin-Partenaire: Pas d'accès";
                     if ($idcompte==NULL) {
@@ -79,7 +79,7 @@ class FilRougeController extends AbstractFOSRestController
                     }
                 }
                 $user->setPartenaire($idpartenaire->getPartenaire());
-                $user->setCompte($idcompte);
+                $user->setCompte($idcompte[0]);
                 break;
 
             case 'Super-Admin':
@@ -117,7 +117,9 @@ class FilRougeController extends AbstractFOSRestController
                 $compte = new Compte();
                 $form2 = $this->createForm(CompteType::class, $compte);
                 $form2->submit($values);
+                $compte->setNumeroCompte(rand(1000000000000,9999999999999));
                 $compte->setDateCreation(new \DateTime());
+                $compte->setSolde(0);
                 $compte->setPartenaire($partenaire);
                 $em->persist($compte);
                 $user->setCompte($compte);

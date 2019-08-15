@@ -47,10 +47,10 @@ class CompteDepotController extends AbstractFOSRestController
         $compte = new Compte();
         $form = $this->createForm(CompteType::class, $compte);
         $form->submit($values);
-        $compte->setNumeroCompte(rand(1000000000000,10000000000000));
+        $compte->setNumeroCompte(rand(1000000000000,9999999999999));
         $compte->setSolde(0);
-        $partenaire = $partenaireRepository->find($values['partenaire']);
-        $compte->setPartenaire($partenaire);
+        $partenaire = $partenaireRepository->findByNinea($values['partenaire']);
+        $compte->setPartenaire($partenaire[0]);
         $compte->setDateCreation(new \DateTime());
         $connect->persist($compte);
         $connect->flush();
@@ -104,15 +104,15 @@ class CompteDepotController extends AbstractFOSRestController
         if($form->isSubmitted()){
             $depot->setDateDepot(new \DateTime());
             $depot->setCaissier($user);
-            $compte = $compteRepository->find($values['compte']);
+            $compte = $compteRepository->findByNumeroCompte($values['compte']);
             if ($compte==NULL) {
                 return $this->json([
                     'message1' =>'Ce compte n\'existe pas'
                 ]);
             }
-            $compte->setSolde($compte->getSolde()+$values['montantDepot']);
-            $connect->persist($compte);
-            $depot->setCompte($compte);
+            $compte[0]->setSolde($compte[0]->getSolde()+$values['montantDepot']);
+            $connect->persist($compte[0]);
+            $depot->setCompte($compte[0]);
             $connect->persist($depot);
             $connect->flush();
             return $this->json([
