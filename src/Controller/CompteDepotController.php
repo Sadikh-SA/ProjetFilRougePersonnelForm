@@ -16,11 +16,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use App\Form\UtilisateurType;
 use App\Repository\ProfilRepository;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route("/filrouge")
@@ -39,30 +39,41 @@ class CompteDepotController extends AbstractFOSRestController
 
     /**
      * @Route("/compte/ajouter", name="compte_ajout", methods={"POST"})
+     * @IsGranted({"ROLE_Wari","ROLE_Super-Admin"}, message="Vous ne pouvez pas créer un compte: pas d'accès")
      */
-    public function creerCompte(Request $request, PartenaireRepository $partenaireRepository)
+    public function creerCompte(Request $request, PartenaireRepository $partenaireRepository, ValidatorInterface $validator)
     {
         $values = $request->request->all();
         $connect = $this->getDoctrine()->getManager();
         $compte = new Compte();
         $form = $this->createForm(CompteType::class, $compte);
         $form->submit($values);
-        $compte->setNumeroCompte(rand(1000000000000,9999999999999));
-        $compte->setSolde(0);
-        $partenaire = $partenaireRepository->findByNinea($values['partenaire']);
-        $compte->setPartenaire($partenaire[0]);
-        $compte->setDateCreation(new \DateTime());
-        $connect->persist($compte);
-        $connect->flush();
-        return $this->json([
-            'code' => 200,
-            'message' =>'Nouveau Compte Ajouté'
-        ]);
+        if ($form->isSubmitted()) {
+            $compte->setNumeroCompte(rand(1000000000000,9999999999999));
+            $compte->setSolde(0);
+            $partenaire = $partenaireRepository->findByNinea($values['partenaire']);
+            if ($partenaire==NULL || $partenaire[0]==NULL) {
+                return $this->json([
+                    'code' => 300,
+                    'Description' =>'Il faut un partenaire pour ce compte ou ce partenaire n\'existe pas'
+                ]);
+            }
+            $compte->setPartenaire($partenaire[0]);
+            $compte->setDateCreation(new \DateTime());
+            $connect->persist($compte);
+            $connect->flush();
+            return $this->json([
+                'code' => 200,
+                'message' =>'Nouveau Compte Ajouté'
+            ]);
+        }
+        return $this->handleView($this->view($validator->validate($form)));
     }
 
 
     /**
      * @Route("/partenaire/ajouter", name="compte_ajouter", methods={"POST"})
+     * @IsGranted({"ROLE_Wari","ROLE_Super-Admin"}, message="Vous ne pouvez pas créer un Partenaire: pas d'accès")
      */
     public function creerPartenaire(Request $request)
     {
@@ -130,6 +141,7 @@ class CompteDepotController extends AbstractFOSRestController
 
     /**
      * @Route("/update/user/{id}", name="modifier_user", methods={"PUT","POST"})
+     * @IsGranted({"ROLE_Wari", "ROLE_Admin-Partenaire", "ROLE_Partenaire", "ROLE_Super-Admin"}, message="Vous n'avez pas les droits pour modifier un utilisateur")
      */
     public function Update(Request $request, ProfilRepository $profilRepository , EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder, Utilisateur $user=null)
     {
@@ -190,6 +202,7 @@ class CompteDepotController extends AbstractFOSRestController
 
     /**
      * @Route("/update/compte/{id}", name="modifier_compte", methods={"PUT","POST"})
+     * @IsGranted({"ROLE_Wari", "ROLE_Super-Admin"}, message="Vous n'avez pas les droits pour modifier un Compte")
      */
     public function UpdateCompte(Request $request, EntityManagerInterface $entityManager, Compte $compte=null)
     {
@@ -224,6 +237,7 @@ class CompteDepotController extends AbstractFOSRestController
 
     /**
      * @Route("/update/depot/{id}", name="modifier_depot", methods={"PUT","POST"})
+     * @IsGranted("ROLE_Caissier", message="Vous n'avez pas les droits pour modifier un dépot")
      */
     public function UpdateDepot(Request $request, EntityManagerInterface $entityManager, Depot $depot=null)
     {
@@ -259,6 +273,7 @@ class CompteDepotController extends AbstractFOSRestController
 
     /**
      * @Route("/update/partenaire/{id}", name="modifier_partenaire", methods={"PUT","POST"})
+     * @IsGranted({"ROLE_Wari", "ROLE_Admin-Partenaire", "ROLE_Partenaire", "ROLE_Super-Admin"}, message="Vous n'avez pas les droits pour créer un new utilisateur")
      */
     public function UpdatePartenaire(Request $request, EntityManagerInterface $entityManager, Partenaire $partenaire=null)
     {

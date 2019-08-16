@@ -2,25 +2,26 @@
 
 namespace App\Controller;
 
-use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\Utilisateur;
-use App\Form\UtilisateurType;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
-use App\Entity\Partenaire;
-use App\Form\PartenaireType;
-use App\Form\CompteType;
 use App\Entity\Compte;
-use App\Form\ProfilType;
 use App\Entity\Profil;
+use App\Form\CompteType;
+use App\Form\ProfilType;
+use App\Entity\Partenaire;
+use App\Entity\Utilisateur;
+use App\Form\PartenaireType;
+use App\Form\UtilisateurType;
+use App\Repository\CompteRepository;
 use App\Repository\ProfilRepository;
 use App\Repository\PartenaireRepository;
-use App\Repository\CompteRepository;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 /**
  * @Route("/filrouge")
@@ -50,6 +51,7 @@ class FilRougeController extends AbstractFOSRestController
 
     /**
      * @Route("/ajouter/partenaire", name="ajouter_les_3", methods={"POST"})
+     * @IsGranted({"ROLE_Wari", "ROLE_Admin-Partenaire", "ROLE_Partenaire", "ROLE_Super-Admin"}, message="Vous n'avez pas les droits pour créer un new utilisateur")
      */
     public function ajout(Request $request, UserPasswordEncoderInterface $passwordEncoder, ProfilRepository $profilRepository, PartenaireRepository $partenaireRepository, CompteRepository $compteRepository)
     {
@@ -147,6 +149,7 @@ class FilRougeController extends AbstractFOSRestController
 
     /**
      * @Route("/ajoutprofil", name="profil", methods={"POST"})
+     * @IsGranted({"ROLE_Wari","ROLE_Super-Admin"}, message="Vous n'avez pas les droits pour créer un new profil")
      */
     public function NewProfil(Request $request)
     {
@@ -185,22 +188,20 @@ class FilRougeController extends AbstractFOSRestController
         $user = $this->getDoctrine()->getRepository(Utilisateur::class)->findOneBy([
             'username' => $values->username,
         ]);
-
-        $isValid = $this->passwordEncoder->isPasswordValid($user, $values->password);
-        if (!$isValid || !$user) {
-            $data = [
-                'code' => 401,
-                'message' => 'Username ou Mot de Passe incorrecte'
-            ];
-            return new JsonResponse($data,300);
-        }
         if (!$user->getStatut()) {
             $data = [
                 'status135' => 404,
-                'message135' => 'Ce compte est Bloqué: Fait appel à ton Propriétaire'
+                'message135' => 'Ton compte est bloqué: Fait appel à ton Propriétaire'
             ];
             return new JsonResponse($data,404);
             
+        }
+        if ($user->getPartenaire()!=NULL && !$user->getPartenaire()->getStatut()) {
+            $data = [
+                'status135' => 404,
+                'message135' => 'Ton Partenaire est bloqué tu ne peux pas travailler'
+            ];
+            return new JsonResponse($data,404);
         }
         $token = $JWTEncoder->encode([
                 'email' => $user->getEmail(),

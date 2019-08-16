@@ -2,15 +2,10 @@
 
 namespace App\Form;
 
-use App\Entity\Commission;
 use App\Entity\Transaction;
-use App\Entity\Utilisateur;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-
 
 class TransactionType extends AbstractType
 {
@@ -28,22 +23,18 @@ class TransactionType extends AbstractType
             ->add('adresseBeneficiaire')
             ->add('numeroTransaction')
             ->add('montantEnvoyer')
-            //->add('totalEnvoyer')
+            // ->add('totalEnvoyer')
             ->add('montantRetirer')
             ->add('CNIBeneficiaire')
-            // ->add('dateEnvoie', DateType::class,[
-            //     'widget' => 'single_text',
-            //     'format' => 'yyyy-mm-dd'
-            // ])
-            ->add('dateRetrait')
-            // ->add('utilisateur', EntityType::class,[
-            //     'class' => Utilisateur::class,
-            //     'choice_label' => 'utilisateur'
-            // ])
-            // ->add('commissionTTC', EntityType::class,[
-            //     'class' => Commission::class,
-            //     'choice_label' => 'commissionTTC'
-            // ])
+            // ->add('dateEnvoie')
+            // ->add('dateRetrait')
+            ->add('type')
+            // ->add('commissionEtat')
+            // ->add('commissionWari')
+            // ->add('commissionEnvoi')
+            // ->add('commissionRetrait')
+            ->add('utilisateur')
+            //->add('commissionTTC')
         ;
     }
 
@@ -51,7 +42,6 @@ class TransactionType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Transaction::class,
-            'csrf_protection' => false
         ]);
     }
 }

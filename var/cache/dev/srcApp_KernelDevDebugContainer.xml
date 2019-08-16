@@ -1584,6 +1584,14 @@
         <argument>2048</argument>
       </call>
       <call method="addListener">
+        <argument>console.command</argument>
+        <argument type="collection">
+          <argument type="service" id="debug.debug_handlers_listener"/>
+          <argument>configure</argument>
+        </argument>
+        <argument>2048</argument>
+      </call>
+      <call method="addListener">
         <argument>kernel.exception</argument>
         <argument type="collection">
           <argument type="service" id="debug.debug_handlers_listener"/>
@@ -5337,10 +5345,11 @@
         <argument>make:migration</argument>
       </call>
     </service>
-    <service id=".service_locator.0VWx6lC" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+    <service id=".service_locator.wThH0TN" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="partenaireRepository" type="service" id="App\Repository\PartenaireRepository"/>
+        <argument key="validator" type="service" id="validator"/>
       </argument>
     </service>
     <service id=".service_locator.JfrEn5y" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
@@ -5396,46 +5405,47 @@
         <argument key="JWTEncoder" type="service" id="lexik_jwt_authentication.encoder.lcobucci"/>
       </argument>
     </service>
-    <service id=".service_locator.a2nNogn" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+    <service id=".service_locator.Y88JtWp" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="commissionRepository" type="service" id="App\Repository\CommissionRepository"/>
+        <argument key="compteRepository" type="service" id="App\Repository\CompteRepository"/>
       </argument>
     </service>
-    <service id=".service_locator.yQTOc5p" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+    <service id=".service_locator.dmek8rU" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection">
-        <argument key="commissionRepository" type="service" id="App\Repository\CommissionRepository"/>
+        <argument key="compteRepository" type="service" id="App\Repository\CompteRepository"/>
         <argument key="entityManager" type="service" id="doctrine.orm.default_entity_manager"/>
       </argument>
     </service>
-    <service id=".service_locator.kYGXC6k" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
+    <service id=".service_locator.ja1tTZ4" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="App\Controller\CompteDepotController::Update" type="service" id=".service_locator.n63jPxA"/>
         <argument key="App\Controller\CompteDepotController::UpdateCompte" type="service" id=".service_locator.bU5WbX_"/>
         <argument key="App\Controller\CompteDepotController::UpdateDepot" type="service" id=".service_locator.hIMNJyo"/>
         <argument key="App\Controller\CompteDepotController::UpdatePartenaire" type="service" id=".service_locator.EEnNkzT"/>
-        <argument key="App\Controller\CompteDepotController::creerCompte" type="service" id=".service_locator.0VWx6lC"/>
+        <argument key="App\Controller\CompteDepotController::creerCompte" type="service" id=".service_locator.wThH0TN"/>
         <argument key="App\Controller\CompteDepotController::faireDepot" type="service" id=".service_locator.JfrEn5y"/>
         <argument key="App\Controller\CompteDepotController::setViewHandler" type="service" id=".service_locator.l2alLEu"/>
         <argument key="App\Controller\FilRougeController::ajout" type="service" id=".service_locator.sQJpPfG"/>
         <argument key="App\Controller\FilRougeController::login" type="service" id=".service_locator.0xDS.HG"/>
         <argument key="App\Controller\FilRougeController::setViewHandler" type="service" id=".service_locator.l2alLEu"/>
-        <argument key="App\Controller\TransactionController::envoyerArgent" type="service" id=".service_locator.a2nNogn"/>
-        <argument key="App\Controller\TransactionController::retraitArgent" type="service" id=".service_locator.yQTOc5p"/>
+        <argument key="App\Controller\TransactionController::envoyerArgent" type="service" id=".service_locator.Y88JtWp"/>
+        <argument key="App\Controller\TransactionController::retraitArgent" type="service" id=".service_locator.dmek8rU"/>
         <argument key="App\Controller\CompteDepotController:Update" type="service" id=".service_locator.n63jPxA"/>
         <argument key="App\Controller\CompteDepotController:UpdateCompte" type="service" id=".service_locator.bU5WbX_"/>
         <argument key="App\Controller\CompteDepotController:UpdateDepot" type="service" id=".service_locator.hIMNJyo"/>
         <argument key="App\Controller\CompteDepotController:UpdatePartenaire" type="service" id=".service_locator.EEnNkzT"/>
-        <argument key="App\Controller\CompteDepotController:creerCompte" type="service" id=".service_locator.0VWx6lC"/>
+        <argument key="App\Controller\CompteDepotController:creerCompte" type="service" id=".service_locator.wThH0TN"/>
         <argument key="App\Controller\CompteDepotController:faireDepot" type="service" id=".service_locator.JfrEn5y"/>
         <argument key="App\Controller\CompteDepotController:setViewHandler" type="service" id=".service_locator.l2alLEu"/>
         <argument key="App\Controller\FilRougeController:ajout" type="service" id=".service_locator.sQJpPfG"/>
         <argument key="App\Controller\FilRougeController:login" type="service" id=".service_locator.0xDS.HG"/>
         <argument key="App\Controller\FilRougeController:setViewHandler" type="service" id=".service_locator.l2alLEu"/>
-        <argument key="App\Controller\TransactionController:envoyerArgent" type="service" id=".service_locator.a2nNogn"/>
-        <argument key="App\Controller\TransactionController:retraitArgent" type="service" id=".service_locator.yQTOc5p"/>
+        <argument key="App\Controller\TransactionController:envoyerArgent" type="service" id=".service_locator.Y88JtWp"/>
+        <argument key="App\Controller\TransactionController:retraitArgent" type="service" id=".service_locator.dmek8rU"/>
       </argument>
     </service>
     <service id=".service_locator.LtnrEkg" class="Symfony\Component\DependencyInjection\ServiceLocator" public="false">
@@ -5741,12 +5751,12 @@
       <argument type="service" id="security.token_storage"/>
     </service>
     <service id="debug.argument_resolver.service.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver" public="false">
-      <argument type="service" id=".service_locator.kYGXC6k"/>
+      <argument type="service" id=".service_locator.ja1tTZ4"/>
     </service>
     <service id="debug.argument_resolver.default.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver" public="false"/>
     <service id="debug.argument_resolver.variadic.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\VariadicValueResolver" public="false"/>
     <service id="debug.argument_resolver.not_tagged_controller.inner" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver" public="false">
-      <argument type="service" id=".service_locator.kYGXC6k"/>
+      <argument type="service" id=".service_locator.ja1tTZ4"/>
     </service>
     <service id="api_platform.swagger.normalizer.api_gateway.inner" class="ApiPlatform\Core\Swagger\Serializer\DocumentationNormalizer" public="false">
       <argument type="service" id="api_platform.metadata.resource.metadata_factory.cached"/>
@@ -6126,7 +6136,7 @@
     <service id="Vich\UploaderBundle\Form\Type\VichImageType" alias="vich_uploader.form.type.image" public="false"/>
     <service id="Vich\UploaderBundle\Templating\Helper\UploaderHelper" alias="vich_uploader.templating.helper.uploader_helper" public="false"/>
     <service id="Vich\UploaderBundle\Twig\Extension\UploaderExtension" alias="vich_uploader.twig.extension.uploader" public="false"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.kYGXC6k"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.ja1tTZ4"/>
     <service id="twig.loader.filesystem" alias="twig.loader.native_filesystem" public="false"/>
     <service id="twig.loader" alias="twig.loader.native_filesystem"/>
     <service id="api_platform.name_converter" alias="serializer.name_converter.metadata_aware"/>

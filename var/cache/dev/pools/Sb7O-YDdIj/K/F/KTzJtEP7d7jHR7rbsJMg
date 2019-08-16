@@ -4,7 +4,8 @@ namespace Symfony\Component\VarExporter\Internal;
 
 return $getExpiry ? PHP_INT_MAX : Hydrator::hydrate(
     $o = [
-        clone (Registry::$prototypes['Symfony\\Component\\Routing\\Annotation\\Route'] ?? Registry::p('Symfony\\Component\\Routing\\Annotation\\Route')),
+        clone (($p = &Registry::$prototypes)['Symfony\\Component\\Routing\\Annotation\\Route'] ?? Registry::p('Symfony\\Component\\Routing\\Annotation\\Route')),
+        clone ($p['Sensio\\Bundle\\FrameworkExtraBundle\\Configuration\\IsGranted'] ?? Registry::p('Sensio\\Bundle\\FrameworkExtraBundle\\Configuration\\IsGranted')),
     ],
     null,
     [
@@ -22,9 +23,18 @@ return $getExpiry ? PHP_INT_MAX : Hydrator::hydrate(
                 ],
             ],
         ],
+        'Sensio\\Bundle\\FrameworkExtraBundle\\Configuration\\IsGranted' => [
+            'attributes' => [
+                1 => 'ROLE_Caissier',
+            ],
+            'message' => [
+                1 => 'Vous n\'avez pas les droits pour modifier un dépot',
+            ],
+        ],
     ],
     [
         $o[0],
+        $o[1],
     ],
     []
 );

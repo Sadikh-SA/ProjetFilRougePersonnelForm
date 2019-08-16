@@ -115,6 +115,31 @@ class Transaction
      */
     private $commissionTTC;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $type;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $commissionEtat;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $commissionWari;
+
+    /**
+     * @ORM\Column(type="float")
+     */
+    private $commissionEnvoi;
+
+    /**
+     * @ORM\Column(type="float", nullable=true)
+     */
+    private $commissionRetrait;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -332,6 +357,66 @@ class Transaction
     public function setCommissionTTC(?Commission $commissionTTC): self
     {
         $this->commissionTTC = $commissionTTC;
+
+        return $this;
+    }
+
+    public function getType(): ?bool
+    {
+        return $this->type;
+    }
+
+    public function setType(bool $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getCommissionEtat(): ?float
+    {
+        return $this->commissionEtat;
+    }
+
+    public function setCommissionEtat(float $commissionEtat): self
+    {
+        $this->commissionEtat = $commissionEtat;
+
+        return $this;
+    }
+
+    public function getCommissionWari(): ?float
+    {
+        return $this->commissionWari;
+    }
+
+    public function setCommissionWari(float $commissionWari): self
+    {
+        $this->commissionWari = $commissionWari;
+
+        return $this;
+    }
+
+    public function getCommissionEnvoi(): ?float
+    {
+        return $this->commissionEnvoi;
+    }
+
+    public function setCommissionEnvoi(float $commissionEnvoi): self
+    {
+        $this->commissionEnvoi = $commissionEnvoi;
+
+        return $this;
+    }
+
+    public function getCommissionRetrait(): ?float
+    {
+        return $this->commissionRetrait;
+    }
+
+    public function setCommissionRetrait(float $commissionRetrait): self
+    {
+        $this->commissionRetrait = $commissionRetrait;
 
         return $this;
     }

@@ -22,10 +22,10 @@ class CompteType extends AbstractType
             //     'widget' => 'single_text',
             //     'format' => 'yyyy-mm-dd'
             // ])
-            // ->add('Partenaire', EntityType::class,[
-            //     'class' => Partenaire::class,
-            //     'choice_label' => 'partenaire'
-            //  ])
+            ->add('Partenaire', EntityType::class,[
+                'class' => Partenaire::class,
+                'choice_label' => 'partenaire'
+             ])
         ;
     }
 
