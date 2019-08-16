@@ -64,10 +64,10 @@ class Utilisateur extends \App\Entity\Utilisateur implements \Doctrine\ORM\Proxy
     public function __sleep()
     {
         if ($this->__isInitialized__) {
-            return ['__isInitialized__', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'id', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'username', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'roles', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'password', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'nom', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'prenom', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'adresse', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'email', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'tel', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'statut', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'profil', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'dateCreation', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'depots', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'partenaire', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'compte', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'imageFile', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'imageName', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'updatedAt', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'transactions'];
+            return ['__isInitialized__', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'id', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'username', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'roles', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'password', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'nom', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'prenom', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'adresse', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'email', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'tel', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'statut', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'profil', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'dateCreation', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'depots', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'partenaire', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'compte', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'imageFile', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'imageName', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'updatedAt', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'transactions', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'transactions1'];
         }
 
-        return ['__isInitialized__', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'id', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'username', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'roles', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'password', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'nom', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'prenom', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'adresse', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'email', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'tel', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'statut', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'profil', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'dateCreation', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'depots', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'partenaire', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'compte', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'imageFile', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'imageName', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'updatedAt', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'transactions'];
+        return ['__isInitialized__', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'id', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'username', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'roles', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'password', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'nom', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'prenom', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'adresse', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'email', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'tel', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'statut', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'profil', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'dateCreation', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'depots', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'partenaire', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'compte', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'imageFile', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'imageName', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'updatedAt', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'transactions', '' . "\0" . 'App\\Entity\\Utilisateur' . "\0" . 'transactions1'];
     }
 
     /**
@@ -604,6 +604,39 @@ class Utilisateur extends \App\Entity\Utilisateur implements \Doctrine\ORM\Proxy
         $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeTransaction', [$transaction]);
 
         return parent::removeTransaction($transaction);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getTransactions1(): \Doctrine\Common\Collections\Collection
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'getTransactions1', []);
+
+        return parent::getTransactions1();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function addTransactions1(\App\Entity\Transaction $transactions1): \App\Entity\Utilisateur
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'addTransactions1', [$transactions1]);
+
+        return parent::addTransactions1($transactions1);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function removeTransactions1(\App\Entity\Transaction $transactions1): \App\Entity\Utilisateur
+    {
+
+        $this->__initializer__ && $this->__initializer__->__invoke($this, 'removeTransactions1', [$transactions1]);
+
+        return parent::removeTransactions1($transactions1);
     }
 
 }

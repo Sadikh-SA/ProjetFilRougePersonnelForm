@@ -128,10 +128,16 @@ class Utilisateur implements UserInterface
      */
     private $transactions;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="userRetrait")
+     */
+    private $transactions1;
+
     public function __construct()
     {
         $this->depots = new ArrayCollection();
         $this->transactions = new ArrayCollection();
+        $this->transactions1 = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -410,6 +416,37 @@ class Utilisateur implements UserInterface
             // set the owning side to null (unless already changed)
             if ($transaction->getUtilisateur() === $this) {
                 $transaction->setUtilisateur(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Transaction[]
+     */
+    public function getTransactions1(): Collection
+    {
+        return $this->transactions1;
+    }
+
+    public function addTransactions1(Transaction $transactions1): self
+    {
+        if (!$this->transactions1->contains($transactions1)) {
+            $this->transactions1[] = $transactions1;
+            $transactions1->setUserRetrait($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTransactions1(Transaction $transactions1): self
+    {
+        if ($this->transactions1->contains($transactions1)) {
+            $this->transactions1->removeElement($transactions1);
+            // set the owning side to null (unless already changed)
+            if ($transactions1->getUserRetrait() === $this) {
+                $transactions1->setUserRetrait(null);
             }
         }
 

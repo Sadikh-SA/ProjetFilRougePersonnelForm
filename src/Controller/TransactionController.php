@@ -99,11 +99,14 @@ class TransactionController extends AbstractController
             ];
             return new JsonResponse($data,200);
         }
+        $envoyeur=$transaction->getUtilisateur();
         $form = $this->createForm(TransactionType::class, $transaction);
         $form->submit($values);
         $errors = [];
+        
         if($form->isSubmitted()){
-            $transaction->setUtilisateur($this->getUser());
+            $transaction->setUtilisateur($envoyeur);
+            $transaction->setUserRetrait($this->getUser());
             $transaction->setTotalEnvoyer($transaction->getTotalEnvoyer());
             $transaction->setDateRetrait(new \DateTime());
             $transaction->setType(true);

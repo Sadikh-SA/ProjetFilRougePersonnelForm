@@ -140,6 +140,11 @@ class Transaction
      */
     private $commissionRetrait;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Utilisateur", inversedBy="transactions1")
+     */
+    private $userRetrait;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -417,6 +422,18 @@ class Transaction
     public function setCommissionRetrait(float $commissionRetrait): self
     {
         $this->commissionRetrait = $commissionRetrait;
+
+        return $this;
+    }
+
+    public function getUserRetrait(): ?Utilisateur
+    {
+        return $this->userRetrait;
+    }
+
+    public function setUserRetrait(?Utilisateur $userRetrait): self
+    {
+        $this->userRetrait = $userRetrait;
 
         return $this;
     }

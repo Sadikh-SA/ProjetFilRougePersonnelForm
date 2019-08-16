@@ -35,6 +35,7 @@ return $getExpiry ? PHP_INT_MAX : Hydrator::hydrate(
                     'commissionWari',
                     'commissionEnvoi',
                     'commissionRetrait',
+                    'userRetrait',
                 ],
             ],
         ],
