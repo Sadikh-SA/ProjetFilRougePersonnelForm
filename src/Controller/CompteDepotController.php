@@ -9,18 +9,24 @@ use App\Form\CompteType;
 use App\Entity\Partenaire;
 use App\Entity\Utilisateur;
 use App\Form\PartenaireType;
+use App\Form\UtilisateurType;
 use App\Repository\CompteRepository;
+use App\Repository\DepotRepository;
+use App\Repository\ProfilRepository;
 use App\Repository\PartenaireRepository;
+use App\Repository\TransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use App\Form\UtilisateurType;
-use App\Repository\ProfilRepository;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route("/filrouge")
@@ -36,6 +42,7 @@ class CompteDepotController extends AbstractFOSRestController
         $this->passwordEncoder = $passwordEncoder;
     }
 
+    
 
     /**
      * @Route("/compte/ajouter", name="compte_ajout", methods={"POST"})
@@ -308,4 +315,47 @@ class CompteDepotController extends AbstractFOSRestController
             return new JsonResponse($data,500);
         
     }
+
+    /**
+     * @Route("/lister/compte", name="lister_compte", methods={"POST", "GET"})
+     */
+    public function listercompte(CompteRepository $compteRepository) : Response
+    {
+       $compte = $compteRepository->findAll();
+       $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
+       $normalizers = [new ObjectNormalizer()];
+       $serializer = new Serializer($normalizers, $encoders);
+       
+       // Serialize your object in Json
+       $jsonObject = $serializer->serialize($compte, 'json', [
+           'compte reference' => function ($object) {
+               return $object->getId();
+           }
+       ]);
+       
+       // For instance, return a Response with encoded Json
+       return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
+    }
+
+    /**
+     * @Route("/lister/depot", name="lister_depot", methods={"POST", "GET"})
+     */
+    public function listerdepot(DepotRepository $depotRepository) : Response
+    {
+       $depot = $depotRepository->findAll();
+       $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
+       $normalizers = [new ObjectNormalizer()];
+       $serializer = new Serializer($normalizers, $encoders);
+
+       // Serialize your object in Json
+       $jsonObject = $serializer->serialize($depot, 'json', [
+           'circular_reference_handler' => function ($object) {
+               return $object->getId();
+           }
+       ]);
+       
+       // For instance, return a Response with encoded Json
+       return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
+    }
+
 }

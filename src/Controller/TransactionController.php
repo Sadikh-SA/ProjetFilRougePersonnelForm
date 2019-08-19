@@ -5,13 +5,18 @@ namespace App\Controller;
 use App\Entity\Commission;
 use App\Entity\Transaction;
 use App\Form\TransactionType;
-use App\Repository\CommissionRepository;
 use App\Repository\CompteRepository;
-use App\Repository\UtilisateurRepository;
+use App\Repository\CommissionRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\TransactionRepository;
+use App\Repository\UtilisateurRepository;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -136,5 +141,27 @@ class TransactionController extends AbstractController
                 ], 400);
             }
         }
+    }
+
+
+    /**
+     * @Route("/lister/transaction", name="lister_transaction", methods={"POST", "GET"})
+     */
+    public function listertransaction(TransactionRepository $transactionRepository) : Response
+    {
+       $transaction = $transactionRepository->findAll();
+       $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
+       $normalizers = [new ObjectNormalizer()];
+       $serializer = new Serializer($normalizers, $encoders);
+       
+       // Serialize your object in Json
+       $jsonObject = $serializer->serialize($transaction, 'json', [
+           'circular_reference_handler' => function ($object) {
+               return $object->getId();
+           }
+       ]);
+       
+       // For instance, return a Response with encoded Json
+       return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
     }
 }

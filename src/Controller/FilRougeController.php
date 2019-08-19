@@ -13,11 +13,15 @@ use App\Form\UtilisateurType;
 use App\Repository\CompteRepository;
 use App\Repository\ProfilRepository;
 use App\Repository\PartenaireRepository;
+use App\Repository\UtilisateurRepository;
+use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Component\Security\Core\Encoder\PasswordEncoderInterface;
@@ -171,6 +175,49 @@ class FilRougeController extends AbstractFOSRestController
             'message0' =>'Une erreurs s\'est produite: il y\'a des champs manquantes ou le profil existe déja'
         ]);
 
+    }
+
+    /**
+     * @Route("/lister/user", name="lister_user", methods={"POST", "GET"})
+     */
+    public function listeruser(UtilisateurRepository $utilisateurRepository) : Response
+    {
+       $user = $utilisateurRepository->findAll();
+       $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
+       $normalizers = [new ObjectNormalizer()];
+       $serializer = new Serializer($normalizers, $encoders);
+       
+       // Serialize your object in Json
+       $jsonObject = $serializer->serialize($user, 'json', [
+           'circular_reference_handler' => function ($object) {
+               return $object->getId();
+           }
+       ]);
+       
+       // For instance, return a Response with encoded Json
+       return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
+    }
+
+
+    /**
+     * @Route("/lister/partenaire", name="lister_partenaire", methods={"POST", "GET"})
+     */
+    public function listerpartenaire(PartenaireRepository $partenaireRepository) : Response
+    {
+       $partenaire = $partenaireRepository->findAll();
+       $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
+       $normalizers = [new ObjectNormalizer()];
+       $serializer = new Serializer($normalizers, $encoders);
+       
+       // Serialize your object in Json
+       $jsonObject = $serializer->serialize($partenaire, 'json', [
+           'circular_reference_handler' => function ($object) {
+               return $object->getId();
+           }
+       ]);
+       
+       // For instance, return a Response with encoded Json
+       return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
     }
 
 
