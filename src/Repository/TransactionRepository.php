@@ -69,15 +69,17 @@ class TransactionRepository extends ServiceEntityRepository
     /**
       * @return Transaction[] Returns an array of Transaction objects
       */
-      public function transactionParDate($dateEnvoie, $dateRetrait)
+      public function transactionParDateUser($datedebut, $datefin, $userconnect)
       {
-          return $this->createQueryBuilder('t')
-              ->andWhere('t.dateEnvoie = :dateEnvoie')
-              ->andWhere('t.dateRetrait = :dateRetrait')
-              ->orWhere('t.dateRetrait = :dateEnvoie')
-              ->setParameter('dateEnvoie', $dateEnvoie)
-              ->setParameter('dateRetrait', $dateRetrait)
-              ->orderBy('t.id', 'ASC')
+          return $this->createQueryBuilder('transactions')
+              ->andWhere('transactions.dateEnvoie >= :dateEnvoie')
+              ->andWhere('transactions.dateEnvoie = :dateRetrait')
+              ->andWhere('transactions.utilisateur = :userconnect')
+              ->ordWhere('transactions.userRetrait = :userconnect')
+              ->setParameter('dateEnvoie', $datedebut)
+              ->setParameter('dateRetrait', $datefin)
+              ->setParameter('userconnect', $userconnect)
+              ->orderBy('transaction.id', 'ASC')
               ->getQuery()
               ->getResult()
           ;
@@ -86,11 +88,11 @@ class TransactionRepository extends ServiceEntityRepository
     /**
       * @return Transaction[] Returns an array of Transaction objects
       */
-      public function transactionParDate1($datedebut, $datefin)
+      public function transactionParDate($datedebut, $datefin)
       {
-          return $this->createQueryBuilder('t')
-              ->andWhere('t.dateEnvoie >= :dateEnvoie')
-              ->andWhere('t.dateEnvoie <= :dateRetrait')
+          return $this->createQueryBuilder('transaction')
+              ->andWhere('transaction.dateEnvoie >= :dateEnvoie')
+              ->andWhere('transaction.dateEnvoie <= :dateRetrait')
               ->setParameter('dateEnvoie', $datedebut)
               ->setParameter('dateRetrait', $datefin)
               ->orderBy('t.id', 'ASC')
@@ -105,9 +107,9 @@ class TransactionRepository extends ServiceEntityRepository
     
     public function transactionUserMoimeme($userEnvoie)
     {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.utilisateur = :userEnvoie')
-            ->orWhere('t.userRetrait = :userEnvoie')
+        return $this->createQueryBuilder('transaction')
+            ->andWhere('transaction.utilisateur = :userEnvoie')
+            ->orWhere('transaction.userRetrait = :userEnvoie')
             ->setParameter('userEnvoie', $userEnvoie)
             ->getQuery()
             ->getResult()
