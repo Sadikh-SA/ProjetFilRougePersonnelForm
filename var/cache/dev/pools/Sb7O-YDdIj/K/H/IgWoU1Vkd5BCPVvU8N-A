@@ -33,7 +33,7 @@ return $getExpiry ? PHP_INT_MAX : Hydrator::hydrate(
                 ],
             ],
             'message' => [
-                1 => 'Vous n\'avez pas les droits pour créer un new utilisateur',
+                1 => 'Vous n\'avez pas les droits pour modifier un partenaire',
             ],
         ],
     ],

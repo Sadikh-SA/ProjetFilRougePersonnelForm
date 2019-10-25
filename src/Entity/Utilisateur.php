@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
@@ -25,16 +26,19 @@ class Utilisateur implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"utilisateur"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups({"utilisateur","transaction", "depot"})
      */
     private $username;
 
     /**
      * @ORM\Column(type="json")
+     * @Groups({"utilisateur"})
      */
     private $roles = [];
 
@@ -46,41 +50,49 @@ class Utilisateur implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"utilisateur"})
      */
     private $nom;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"utilisateur"})
      */
     private $prenom;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"utilisateur"})
      */
     private $adresse;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
+     * @Groups({"utilisateur"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255, unique=true)
+     * @Groups({"utilisateur"})
      */
     private $tel;
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"utilisateur"})
      */
     private $statut;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"utilisateur"})
      */
     private $profil;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"utilisateur"})
      */
     private $dateCreation;
 
@@ -92,12 +104,14 @@ class Utilisateur implements UserInterface
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Partenaire", inversedBy="utilisateurs")
      * @ORM\JoinColumn(nullable=true)
+     * @Groups({"utilisateur"})
      */
     private $partenaire;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Compte", inversedBy="utilisateurs")
      * @ORM\JoinColumn(nullable=true)
+     * @Groups({"utilisateur"})
      */
     private $compte;
 
@@ -111,6 +125,7 @@ class Utilisateur implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"utilisateur"})
      *
      * @var string
      */
@@ -124,12 +139,13 @@ class Utilisateur implements UserInterface
     private $updatedAt;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="utilisateur")
+     * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="utilisateur")     * @Groups({"transaction"})
      */
     private $transactions;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Transaction", mappedBy="userRetrait")
+     * @Groups({"transaction"})
      */
     private $transactions1;
 

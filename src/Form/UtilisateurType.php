@@ -25,6 +25,7 @@ class UtilisateurType extends AbstractType
             ->add('adresse')
             ->add('email')
             ->add('tel')
+            //->add('statut')
             ->add('profil')
             // ->add('dateCreation', DateType::class,[
             //     'widget' => 'single_text',

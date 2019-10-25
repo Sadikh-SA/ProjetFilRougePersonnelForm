@@ -5,6 +5,7 @@ namespace App\Entity;
 use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -24,11 +25,13 @@ class Compte
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"compte"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="float", unique=true)
+     * @Groups({"compte", "utilisateur", "depot"})
      */
     private $numeroCompte;
 
@@ -39,22 +42,26 @@ class Compte
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"compte", "depot"})
      */
     private $nomBeneficiaire;
 
     /**
      * @ORM\Column(type="float")
+     * @Groups({"compte"})
      */
     private $solde;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"compte"})
      */
     private $dateCreation;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Partenaire", inversedBy="comptes")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"compte", "depot"})
      */
     private $Partenaire;
 

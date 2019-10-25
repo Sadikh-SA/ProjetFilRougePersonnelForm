@@ -2,8 +2,9 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
@@ -20,16 +21,19 @@ class Transaction
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"transaction"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"transaction"})
      */
     private $nomEnvoyeur;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"transaction"})
      */
     private $prenomEnvoyeur;
 
@@ -40,26 +44,31 @@ class Transaction
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"transaction"})
      */
     private $telEnvoyeur;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"transaction"})
      */
     private $CNIEnvoyeur;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"transaction"})
      */
     private $nomBeneficiaire;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"transaction"})
      */
     private $prenomBeneficiaire;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"transaction"})
      */
     private $telBeneficiaire;
 
@@ -70,11 +79,13 @@ class Transaction
 
     /**
      * @ORM\Column(type="float", unique=true)
+     * @Groups({"transaction"})
      */
     private $numeroTransaction;
 
     /**
      * @ORM\Column(type="float")
+     * @Groups({"transaction"})
      */
     private $montantEnvoyer;
 
@@ -85,27 +96,32 @@ class Transaction
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"transaction"})
      */
     private $montantRetirer;
 
     /**
      * @ORM\Column(type="float", nullable=true)
+     * @Groups({"transaction"})
      */
     private $CNIBeneficiaire;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Utilisateur", inversedBy="transactions")
      * @ORM\JoinColumn(nullable=false)
+     * @Groups({"transaction"})
      */
     private $utilisateur;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"transaction"})
      */
     private $dateEnvoie;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Groups({"transaction"})
      */
     private $dateRetrait;
 
@@ -117,6 +133,7 @@ class Transaction
 
     /**
      * @ORM\Column(type="boolean")
+     * @Groups({"transaction"})
      */
     private $type;
 
@@ -142,6 +159,7 @@ class Transaction
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Utilisateur", inversedBy="transactions1")
+     * @Groups({"transaction"})
      */
     private $userRetrait;
 

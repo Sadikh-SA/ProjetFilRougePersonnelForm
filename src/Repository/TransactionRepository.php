@@ -47,4 +47,70 @@ class TransactionRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    /*public function transactionUser($userEnvoie, $userRetrait): array
+    {
+        $entityManager = $this->getEntityManager();
+
+        $query = $entityManager->createQuery(
+            'SELECT *
+            FROM App\Entity\Transaction t
+            WHERE t.userEnvoie = :userEnvoie
+            OR t.userRetrait = :userRetrait
+            ORDER BY p.price ASC'
+        )->setParameter('userEnvoie', $userEnvoie);
+         ->setParameter('userRetrait', $userRetrait);
+
+        // returns an array of Product objects
+        return $query->execute();
+    }*/
+
+    
+    /**
+      * @return Transaction[] Returns an array of Transaction objects
+      */
+      public function transactionParDate($dateEnvoie, $dateRetrait)
+      {
+          return $this->createQueryBuilder('t')
+              ->andWhere('t.dateEnvoie = :dateEnvoie')
+              ->andWhere('t.dateRetrait = :dateRetrait')
+              ->orWhere('t.dateRetrait = :dateEnvoie')
+              ->setParameter('dateEnvoie', $dateEnvoie)
+              ->setParameter('dateRetrait', $dateRetrait)
+              ->orderBy('t.id', 'ASC')
+              ->getQuery()
+              ->getResult()
+          ;
+      }
+
+    /**
+      * @return Transaction[] Returns an array of Transaction objects
+      */
+      public function transactionParDate1($datedebut, $datefin)
+      {
+          return $this->createQueryBuilder('t')
+              ->andWhere('t.dateEnvoie >= :dateEnvoie')
+              ->andWhere('t.dateEnvoie <= :dateRetrait')
+              ->setParameter('dateEnvoie', $datedebut)
+              ->setParameter('dateRetrait', $datefin)
+              ->orderBy('t.id', 'ASC')
+              ->getQuery()
+              ->getResult()
+          ;
+      }
+
+     /**
+      * @return Transaction[] Returns an array of Transaction objects
+      */
+    
+    public function transactionUserMoimeme($userEnvoie)
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.utilisateur = :userEnvoie')
+            ->orWhere('t.userRetrait = :userEnvoie')
+            ->setParameter('userEnvoie', $userEnvoie)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

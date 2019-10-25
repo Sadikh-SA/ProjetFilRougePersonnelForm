@@ -15,7 +15,10 @@ class PartenaireType extends AbstractType
             ->add('ninea')
             ->add('localisation')
             ->add('domaineActivite')
-            // ->add('dateCreation')
+            //  ->add('dateCreation', DateType::class,[
+            //     'widget' => 'single_text',
+            //     'format' => 'yyyy-mm-dd'
+            // ])
         ;
     }
 

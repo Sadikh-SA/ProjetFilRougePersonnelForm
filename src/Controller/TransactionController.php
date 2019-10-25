@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\TransactionRepository;
 use App\Repository\UtilisateurRepository;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,6 +20,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Mime\Message;
 
 /**
  * @Route("/filrouge")
@@ -76,7 +78,9 @@ class TransactionController extends AbstractController
             $connect->flush();
                 return $this->json([
                     'code' => 200,
-                    'message' =>'Envoie Argent fait avec succès'
+                    'message' =>'Envoie Argent fait avec succès',
+                    'numerotransaction' => $transaction->getNumeroTransaction(),
+                    'recu' => $transaction
                 ]);
         }
         return $this->json([
@@ -87,54 +91,55 @@ class TransactionController extends AbstractController
 
 
     /**
-     * @Route("/faire/retrait/{id}", name="retrait_argent", methods={"PUT","POST"})
+     * @Route("/faire/retrait", name="retrait_argent", methods={"PUT","POST"})
      * @IsGranted("ROLE_Utilisateur", message="Seul un utilisateur est habilité à effectuer une transaction")
      */
-    public function retraitArgent(Request $request, CompteRepository $compteRepository,EntityManagerInterface $entityManager, Transaction $transaction=null)
+    public function retraitArgent(Request $request, CompteRepository $compteRepository,EntityManagerInterface $entityManager, Transaction $transaction=null, TransactionRepository $transactionRepository)
     {
         $values = $request->request->all();
+        $transaction = $transactionRepository->findByNumeroTransaction($values['numeroTransaction']);
         
         if ($transaction==NULL) {
             $errors[] = 'cet transaction n\'existe pas dans la base' ;
         }
-        if ($transaction->getType()) {
+        if ($transaction[0]->getType()==true) {
             $data = [
                 'status' => 400,
                 'message3' => "Le retrait de ce transaction est deja fait"
             ];
             return new JsonResponse($data,200);
         }
-        $envoyeur=$transaction->getUtilisateur();
-        $form = $this->createForm(TransactionType::class, $transaction);
+        $envoyeur=$transaction[0]->getUtilisateur();
+        $form = $this->createForm(TransactionType::class, $transaction[0]);
         $form->submit($values);
         $errors = [];
         
         if($form->isSubmitted()){
-            $transaction->setUtilisateur($envoyeur);
-            $transaction->setUserRetrait($this->getUser());
-            $transaction->setTotalEnvoyer($transaction->getTotalEnvoyer());
-            $transaction->setDateRetrait(new \DateTime());
-            $transaction->setType(true);
-            $transaction->setMontantRetirer($transaction->getTotalEnvoyer() - $transaction->getCommissionTTC()->getValeur());
-            $transaction->setCommissionRetrait(($transaction->getCommissionTTC()->getValeur()*20)/100);
+            $transaction[0]->setUtilisateur($envoyeur);
+            $transaction[0]->setUserRetrait($this->getUser());
+            $transaction[0]->setTotalEnvoyer($transaction[0]->getTotalEnvoyer());
+            $transaction[0]->setDateRetrait(new \DateTime());
+            $transaction[0]->setType(true);
+            $transaction[0]->setMontantRetirer($transaction[0]->getTotalEnvoyer() - $transaction[0]->getCommissionTTC()->getValeur());
+            $transaction[0]->setCommissionRetrait(($transaction[0]->getCommissionTTC()->getValeur()*20)/100);
             $comptepartenaire = $this->getUser()->getCompte();
             if ($comptepartenaire == NULL || $comptepartenaire->getPartenaire()!=$this->getUser()->getPartenaire()) {
                 $errors[]='Vous ne pouvez pas faire de transaction car on ne vous a pas assigné de compte ou Vous êtes un Hacker';
             }
             if (!$errors) {
-                $comptepartenaire->setSolde($comptepartenaire->getSolde() + ($transaction->getTotalEnvoyer() - $transaction->getCommissionTTC()->getValeur()) + ($transaction->getCommissionTTC()->getValeur()*20)/100);
-                $entityManager->persist($transaction);
+                $comptepartenaire->setSolde($comptepartenaire->getSolde() + ($transaction[0]->getTotalEnvoyer() - $transaction[0]->getCommissionTTC()->getValeur()) + ($transaction[0]->getCommissionTTC()->getValeur()*20)/100);
+                $entityManager->persist($transaction[0]);
                 $compteEtat = $compteRepository->findByNumeroCompte(1960196019604);
                 $compteWari = $compteRepository->findByNumeroCompte(2019201920190);
-                $compteEtat[0]->setSolde($transaction->getCommissionEtat());
-                $compteWari[0]->setSolde($transaction->getCommissionWari());
+                $compteEtat[0]->setSolde($transaction[0]->getCommissionEtat());
+                $compteWari[0]->setSolde($transaction[0]->getCommissionWari());
                 $entityManager->flush();
-                $data = [
+                return $this->json([
                     'status3' => 200,
-                    'message3' => "Le retrait est fait avec succès.",
-                    'montant retirer' => $transaction->getMontantRetirer()
-                ];
-                return new JsonResponse($data,200);
+                        'message3' => "Le retrait est fait avec succès.",
+                        'montant retirer' => $transaction[0]->getMontantRetirer(),
+                        'recu' => $transaction[0]
+                    ]);
             } else {
                 return $this->json([
                     'errors' => $errors
@@ -147,21 +152,120 @@ class TransactionController extends AbstractController
     /**
      * @Route("/lister/transaction", name="lister_transaction", methods={"POST", "GET"})
      */
-    public function listertransaction(TransactionRepository $transactionRepository) : Response
+    public function listertransaction(TransactionRepository $transactionRepository, SerializerInterface $serializer)
     {
        $transaction = $transactionRepository->findAll();
-       $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
-       $normalizers = [new ObjectNormalizer()];
-       $serializer = new Serializer($normalizers, $encoders);
-       
-       // Serialize your object in Json
-       $jsonObject = $serializer->serialize($transaction, 'json', [
-           'circular_reference_handler' => function ($object) {
-               return $object->getId();
-           }
-       ]);
-       
-       // For instance, return a Response with encoded Json
-       return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
+        $data = $serializer->serialize($transaction, 'json', [ 'groups' => 'transaction']);
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        );
+
+    }
+
+
+
+    /**
+     * @Route("/lister/transaction/date", name="transaction_date", methods={"POST","GET"})
+     */
+    public function transaction(Request $request, TransactionRepository $transactionRepository) : Response 
+    {
+        $values = json_decode($request->getContent());
+        $transaction = $transactionRepository->findAll();
+        $date = new \DateTime($values->datefin);
+        $datefin = $transactionRepository->findByDateEnvoie($date);
+        $datebut = $transactionRepository->findByDateEnvoie($values['datedebut']);
+        if ($transaction->getDateEnvoie()<=$datefin && $transaction->getDateEnvoie()>=$datebut) {
+            $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
+            $normalizers = [new ObjectNormalizer()];
+            $serializer = new Serializer($normalizers, $encoders);
+            $jsonObject = $serializer->serialize($transaction, 'json', [
+                'circular_reference_handler' => function ($object) {
+                    return $object->getId();
+                }
+            ]);
+            return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
+        }
+        else {
+            return $this->json([
+                'Message' => 'Pas de Resultat pour ce recherche'
+            ]);
+        }
+    }
+
+
+    /**
+     * @Route("/select/transaction", name="lister_un_transaction_quelconque", methods={"POST","GET"})
+     */
+    public function selectTransaction(Request $request, TransactionRepository $TransactionRepository, SerializerInterface $serializer)
+    {
+        $values = $request->request->all();
+        $transaction = $TransactionRepository->findByNumeroTransaction($values['numeroTransaction']);
+        $data = $serializer->serialize($transaction, 'json');
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        );
+
+    }
+
+
+    /**
+     *@Route("/select/transaction/partenaire", name="lister_les_transactions_d_un_partenaire_quelconque", methods={"POST","GET"})
+     *@IsGranted("ROLE_Utilisateur", message="Seul un utilisateur est habilité à effectuer une transaction")
+     */
+    /*public function selectTransactionPartenaire(Request $request, TransactionRepository $TransactionRepository, SerializerInterface $serializer)
+    {
+        $values = $request->request->all();
+        $transaction = new Transaction();
+        $transactions = $TransactionRepository->findAll();
+        $data = $serializer->serialize($transaction, 'json');
+    
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        );
+
+    }*/
+
+    /**
+     *@Route("/select/transaction/user", name="lister_les transactions_d_un_partenaire1_quelconque", methods={"POST","GET"})
+     *@IsGranted({"ROLE_Partenaire", "ROLE_Admin-Partenaire", "ROLE_Utilisateur"}, message="Seul un utilisateur est habilité à effectuer une transaction")
+     */
+    public function selectTransacPartenaire(Request $request, TransactionRepository $TransactionRepository, UtilisateurRepository $UtilisateurRepository , SerializerInterface $serializer)
+    {
+        $usertransaction = $this->getUser();
+        $resultat = $TransactionRepository->transactionUserMoimeme($usertransaction);
+        $data = $serializer->serialize($resultat, 'json');
+    
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        );
+
+    }
+
+    /**
+     *@Route("/select/transaction/user", name="lister_les transactions_d_un_partenaire1_quelconque", methods={"POST","GET"})
+     *@IsGranted({"ROLE_Partenaire", "ROLE_Admin-Partenaire", "ROLE_Utilisateur"}, message="Seul un utilisateur est habilité à effectuer une transaction")
+     */
+    public function selectTransacDate(Request $request, TransactionRepository $TransactionRepository, UtilisateurRepository $UtilisateurRepository , SerializerInterface $serializer)
+    {
+        $values = $request->request->all();
+
+        $resultat = $TransactionRepository->transactionParDate($values['dateEnvoie'],$values['dateRetrait']);
+        
+        $data = $serializer->serialize($resultat, 'json');
+    
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        );
+
     }
 }

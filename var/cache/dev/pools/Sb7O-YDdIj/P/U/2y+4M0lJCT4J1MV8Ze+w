@@ -11,7 +11,7 @@ return $getExpiry ? PHP_INT_MAX : Hydrator::hydrate(
     [
         'Symfony\\Component\\Routing\\Annotation\\Route' => [
             'path' => [
-                '/faire/retrait/{id}',
+                '/faire/retrait',
             ],
             'name' => [
                 'retrait_argent',

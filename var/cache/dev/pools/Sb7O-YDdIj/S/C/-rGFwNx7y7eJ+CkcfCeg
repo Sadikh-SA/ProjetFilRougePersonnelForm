@@ -1,0 +1,44 @@
+<?php
+
+namespace Symfony\Component\VarExporter\Internal;
+
+return $getExpiry ? PHP_INT_MAX : Hydrator::hydrate(
+    $o = [
+        clone (($p = &Registry::$prototypes)['Symfony\\Component\\Routing\\Annotation\\Route'] ?? Registry::p('Symfony\\Component\\Routing\\Annotation\\Route')),
+        clone ($p['Sensio\\Bundle\\FrameworkExtraBundle\\Configuration\\IsGranted'] ?? Registry::p('Sensio\\Bundle\\FrameworkExtraBundle\\Configuration\\IsGranted')),
+    ],
+    null,
+    [
+        'Symfony\\Component\\Routing\\Annotation\\Route' => [
+            'path' => [
+                '/select/transaction/user',
+            ],
+            'name' => [
+                'lister_les transactions_d_un_partenaire1_quelconque',
+            ],
+            'methods' => [
+                [
+                    'POST',
+                    'GET',
+                ],
+            ],
+        ],
+        'Sensio\\Bundle\\FrameworkExtraBundle\\Configuration\\IsGranted' => [
+            'attributes' => [
+                1 => [
+                    'ROLE_Partenaire',
+                    'ROLE_Admin-Partenaire',
+                    'ROLE_Utilisateur',
+                ],
+            ],
+            'message' => [
+                1 => 'Seul un utilisateur est habilité à effectuer une transaction',
+            ],
+        ],
+    ],
+    [
+        $o[0],
+        $o[1],
+    ],
+    []
+);

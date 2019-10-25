@@ -12,11 +12,13 @@ use App\Form\PartenaireType;
 use App\Form\UtilisateurType;
 use App\Repository\CompteRepository;
 use App\Repository\DepotRepository;
+use App\Repository\UtilisateurRepository;
 use App\Repository\ProfilRepository;
 use App\Repository\PartenaireRepository;
 use App\Repository\TransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -71,15 +73,16 @@ class CompteDepotController extends AbstractFOSRestController
             $connect->flush();
             return $this->json([
                 'code' => 200,
-                'message' =>'Nouveau Compte Ajouté'
+                'messages' =>'Nouveau Compte Ajouté'
             ]);
         }
         return $this->handleView($this->view($validator->validate($form)));
     }
 
 
+
     /**
-     * @Route("/partenaire/ajouter", name="compte_ajouter", methods={"POST"})
+     * @Route("/partenaire/ajouter", name="compte_ajouter", methods={"POST","GET"})
      * @IsGranted({"ROLE_Wari","ROLE_Super-Admin"}, message="Vous ne pouvez pas créer un Partenaire: pas d'accès")
      */
     public function creerPartenaire(Request $request)
@@ -96,7 +99,7 @@ class CompteDepotController extends AbstractFOSRestController
             $connect->flush();
                 return $this->json([
                     'code' => 200,
-                    'message' =>'Nouveau Partenaire Ajouté'
+                    'message6' =>'Nouveau Partenaire Ajouté'
                 ]);
         }
         return $this->json([
@@ -169,7 +172,7 @@ class CompteDepotController extends AbstractFOSRestController
             if (isset($values[$statut])) {
                 $user->setStatut($values[$statut]);
             }
-            $profil = $profilRepository->find($values['profil']);
+            $profil = $profilRepository->findByLibelle($values['profil']);
             if (!$profil) {
                 $errors[] = "Ce Profil n'existe pas";
             }elseif ($profil->getLibelle()=="Admin-Partenaire") {
@@ -202,6 +205,95 @@ class CompteDepotController extends AbstractFOSRestController
                 return new JsonResponse($data,200);
             }
             
+        }
+        
+    }
+
+    /**
+     * @Route("/bloquer/users", name="bloquer_user_1", methods={"POST", "PUT"})
+     */
+    public function bloquerUsers(Request $request, UtilisateurRepository $UtilisateurRepository , EntityManagerInterface $entityManager)
+    {
+        $values =json_decode($request->getContent(),true);
+        $user = $UtilisateurRepository->findByUsername($values['username']);
+        if (!$user) {
+           return $this->json([
+                'code' => 404,
+                'messagee' => 'Ce user n\'existe pas dans la base'
+            ]);
+        }
+        if ($user[0]->getProfil() != "9" && $this->getUser()->getProfil() == "9") {
+            if ($user[0]->getStatut()) {
+                $user[0]->setStatut(false);
+                $entityManager->flush();
+                return $this->json([
+                    'code' => 200,
+                    'message' => 'vous avez bloquer ce user'
+                ]);
+            } else {
+                $user[0]->setStatut(true);
+                $entityManager->flush();
+                return $this->json([
+                    'code' => 200,
+                    'message' => 'vous avez activer ce user'
+                ]);
+            }
+        }else if($user[0]->getProfil() != "11" && $this->getUser()->getProfil() == "11"){
+            if ($user[0]->getStatut()) {
+                $user[0]->setStatut(false);
+                $entityManager->flush();
+                return $this->json([
+                    'code' => 200,
+                    'message' => 'vous avez bloquer ce user'
+                ]);
+            } else {
+                $user[0]->setStatut(true);
+                $entityManager->flush();
+                return $this->json([
+                    'code' => 200,
+                    'message' => 'vous avez activer ce user'
+                ]);
+            }
+        }else {
+            return $this->json([
+                    'code' => 403,
+                    'message' => 'Ce user ne peut pas être bloqué'
+                ]);
+        }
+
+
+        
+        
+    }
+
+    /**
+     * @Route("/bloquer/partenaire", name="bloquer_unpartenaire", methods={"PUT","POST"})
+     */
+    public function BloquerParte(Request $request, PartenaireRepository $partenaireRepository , EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder)
+    {
+        $values = $request->request->all();
+        $partenaire = $partenaireRepository->findByNinea($values['ninea']);
+        if (!$partenaire) {
+           return $this->json([
+                'code' => 404,
+                'messagee' => 'Ce partenaire n\'existe pas dans la base'
+            ]);
+        }
+
+        if ($partenaire[0]->getStatut()) {
+            $partenaire[0]->setStatut(false);
+            $entityManager->flush();
+            return $this->json([
+                'code' => 200,
+                'message' => 'vous avez bloquer ce partenaire'
+            ]);
+        } else {
+            $partenaire[0]->setStatut(true);
+            $entityManager->flush();
+            return $this->json([
+                'code' => 200,
+                'message' => 'vous avez activer ce partenaire'
+            ]);
         }
         
     }
@@ -280,7 +372,7 @@ class CompteDepotController extends AbstractFOSRestController
 
     /**
      * @Route("/update/partenaire/{id}", name="modifier_partenaire", methods={"PUT","POST"})
-     * @IsGranted({"ROLE_Wari", "ROLE_Admin-Partenaire", "ROLE_Partenaire", "ROLE_Super-Admin"}, message="Vous n'avez pas les droits pour créer un new utilisateur")
+     * @IsGranted({"ROLE_Wari", "ROLE_Admin-Partenaire", "ROLE_Partenaire", "ROLE_Super-Admin"}, message="Vous n'avez pas les droits pour modifier un partenaire")
      */
     public function UpdatePartenaire(Request $request, EntityManagerInterface $entityManager, Partenaire $partenaire=null)
     {
@@ -318,44 +410,184 @@ class CompteDepotController extends AbstractFOSRestController
 
     /**
      * @Route("/lister/compte", name="lister_compte", methods={"POST", "GET"})
+     * @IsGranted({"ROLE_Wari", "ROLE_Super-Admin"}, message="Vous n'avez pas les droits pour lister les comptes")
      */
-    public function listercompte(CompteRepository $compteRepository) : Response
+    public function listercompte(CompteRepository $compteRepository, SerializerInterface $serializer)
     {
        $compte = $compteRepository->findAll();
-       $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
-       $normalizers = [new ObjectNormalizer()];
-       $serializer = new Serializer($normalizers, $encoders);
+       $data = $serializer->serialize($compte, 'json', ['groups' => ['compte']]);
+    
        
-       // Serialize your object in Json
-       $jsonObject = $serializer->serialize($compte, 'json', [
-           'compte reference' => function ($object) {
-               return $object->getId();
-           }
-       ]);
-       
-       // For instance, return a Response with encoded Json
-       return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        );
     }
 
     /**
      * @Route("/lister/depot", name="lister_depot", methods={"POST", "GET"})
+     * @IsGranted({"ROLE_Caissier"}, message="Vous n'avez pas les droits pour lister les dépots")
      */
-    public function listerdepot(DepotRepository $depotRepository) : Response
+    public function listerdepot(DepotRepository $depotRepository, SerializerInterface $serializer)
     {
        $depot = $depotRepository->findAll();
-       $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
-       $normalizers = [new ObjectNormalizer()];
-       $serializer = new Serializer($normalizers, $encoders);
-
-       // Serialize your object in Json
-       $jsonObject = $serializer->serialize($depot, 'json', [
-           'circular_reference_handler' => function ($object) {
-               return $object->getId();
-           }
-       ]);
+       $data = $serializer->serialize($depot, 'json', ['groups' => ['depot']]);
+    
        
-       // For instance, return a Response with encoded Json
-       return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        );
     }
 
+
+    /**
+     * @Route("/select/user", name="lister_un_utilisateur_quelconque", methods={"POST","GET"})
+     * @IsGranted({"ROLE_Wari", "ROLE_Admin-Partenaire", "ROLE_Partenaire", "ROLE_Super-Admin"}, message="Vous n'avez pas les droits")
+     */
+    public function selectUser(Request $request, UtilisateurRepository $UtilisateurRepository, SerializerInterface $serializer)
+    {
+        $values = $request->request->all();
+        $user = $UtilisateurRepository->findByUsername($values['username']);
+        $data = $serializer->serialize($user, 'json', ['groups' => ['utilisateur']]);
+    
+       
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        );
+
+    }
+    /**
+     * @Route("/select/compte", name="lister_un_compte_quelconque", methods={"POST","GET"})
+     * @IsGranted({"ROLE_Wari", "ROLE_Admin-Partenaire", "ROLE_Partenaire", "ROLE_Super-Admin", "ROLE_Caissier"}, message="Vous n'avez pas les droits ")
+     */
+    public function selectCompte(Request $request, CompteRepository $CompteRepository, SerializerInterface $serializer)
+    {
+        $values = $request->request->all();
+        $compte = $CompteRepository->findByNumeroCompte($values['numeroCompte']);
+        $data = $serializer->serialize($compte, 'json', ['groups' => ['compte']]);
+    
+       
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        );
+
+    }
+
+    /**
+     * @Route("/select/partenaire", name="lister_un_partenaire_quelconque", methods={"POST","GET"})
+     * @IsGranted({"ROLE_Wari", "ROLE_Admin-Partenaire", "ROLE_Partenaire", "ROLE_Super-Admin"}, message="Vous n'avez pas les droits")
+     */
+    public function selectPartenaire(Request $request, PartenaireRepository $PartenaireRepository, SerializerInterface $serializer)
+    {
+        $values = $request->request->all();
+        $partenaire = $PartenaireRepository->findByNinea($values['ninea']);
+        $data = $serializer->serialize($partenaire, 'json', ['groups' => ['partenaire']]);
+    
+       
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        );
+
+    }
+
+    /**
+     * @Route("/select/profil", name="lister_un_profil_quelconque", methods={"POST","GET"})
+     * @IsGranted({"ROLE_Wari", "ROLE_Super-Admin"}, message="Vous n'avez pas les droits ")
+     */
+    public function selectProfil(Request $request, ProfilRepository $ProfilRepository, SerializerInterface $serializer)
+    {
+        $values = $request->request->all();
+        $profil = $ProfilRepository->findByLibelle($values['libelle']);
+        $data = $serializer->serialize($profil, 'json');
+    
+       
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        );
+
+    }
+
+    /**
+     * @Route("/lister/profil", name="lister_tous_profil", methods={"POST","GET"})
+     * @IsGranted({"ROLE_Wari", "ROLE_Super-Admin"}, message="Vous n'avez pas les droits")
+     */
+    public function listerProfil(ProfilRepository $ProfilRepository, SerializerInterface $serializer)
+    {
+        $profil = $ProfilRepository->findAll();
+        $data = $serializer->serialize($profil, 'json');
+    
+       
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        );
+
+    }
+
+
+    /**
+     * @Route("/attribuer/compte", name="attribuer_compte", methods={"POST", "PUT"})
+     * @IsGranted({"ROLE_Partenaire", "ROLE_Admin-Partenaire"}, message="Vous n'avez pas les droits ")
+     */
+    public function attribuerCompte(Request $request, UtilisateurRepository $UtilisateurRepository , CompteRepository $compteRepository , EntityManagerInterface $entityManager)
+    {
+        $values = $request->request->all();
+        $values =json_decode($request->getContent(),true);
+        $user = $UtilisateurRepository->findByUsername($values['username']);
+        $compte = $compteRepository->findByNumeroCompte($values['compte']);
+        if (!$user) {
+           return $this->json([
+                'code' => 404,
+                'messagee' => 'Ce user n\'existe pas dans la base'
+            ]);
+        }
+        if (!$compte) {
+            return $this->json([
+                'code' => 404,
+                'messagee' => 'Ce compte n\'existe pas dans la base'
+            ]);
+        }
+
+            $user[0]->setCompte($compte[0]);
+            $entityManager->flush();
+            return $this->json([
+                'code' => 200,
+                'message' => 'vous avez attribuer un compte à '.$values['username']
+            ]);
+    }
+
+    /**
+     * @Route("/lister/compte/un/partenaire", name="listuer_compte", methods={"POST", "GET"})
+     * @IsGranted({"ROLE_Partenaire", "ROLE_Admin-Partenaire"}, message="Vous n'avez pas les droits ")
+     */
+    public function FunctionName(SerializerInterface $serializer)
+    {
+        $compte = $this->getUser()->getPartenaire()->getComptes();
+        if (!$compte) {
+             return $this->json([
+                'code' => 404,
+                'message' => 'Ce Compte n\'existe pas dans la base'
+            ]);
+        }
+        $data = $serializer->serialize($compte, 'json');
+    
+       
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        ); 
+    }
 }

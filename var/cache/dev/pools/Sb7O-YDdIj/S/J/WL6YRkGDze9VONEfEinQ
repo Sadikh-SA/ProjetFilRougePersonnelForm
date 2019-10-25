@@ -6,6 +6,7 @@ return $getExpiry ? PHP_INT_MAX : Hydrator::hydrate(
     $o = [
         clone (($p = &Registry::$prototypes)['Doctrine\\ORM\\Mapping\\ManyToOne'] ?? Registry::p('Doctrine\\ORM\\Mapping\\ManyToOne')),
         clone ($p['Doctrine\\ORM\\Mapping\\JoinColumn'] ?? Registry::p('Doctrine\\ORM\\Mapping\\JoinColumn')),
+        clone ($p['Symfony\\Component\\Serializer\\Annotation\\Groups'] ?? Registry::p('Symfony\\Component\\Serializer\\Annotation\\Groups')),
     ],
     null,
     [
@@ -17,10 +18,18 @@ return $getExpiry ? PHP_INT_MAX : Hydrator::hydrate(
                 'utilisateurs',
             ],
         ],
+        'Symfony\\Component\\Serializer\\Annotation\\Groups' => [
+            'groups' => [
+                2 => [
+                    'utilisateur',
+                ],
+            ],
+        ],
     ],
     [
         $o[0],
         $o[1],
+        $o[2],
     ],
     []
 );

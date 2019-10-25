@@ -23,18 +23,18 @@ class TransactionType extends AbstractType
             ->add('adresseBeneficiaire')
             ->add('numeroTransaction')
             ->add('montantEnvoyer')
-            // ->add('totalEnvoyer')
+            # ->add('totalEnvoyer')
             ->add('montantRetirer')
             ->add('CNIBeneficiaire')
-            // ->add('dateEnvoie')
-            // ->add('dateRetrait')
+            # ->add('dateEnvoie')
+            # ->add('dateRetrait')
             ->add('type')
-            // ->add('commissionEtat')
-            // ->add('commissionWari')
-            // ->add('commissionEnvoi')
-            // ->add('commissionRetrait')
+            # ->add('commissionEtat')
+            # ->add('commissionWari')
+            # ->add('commissionEnvoi')
+            # ->add('commissionRetrait')
             ->add('utilisateur')
-            //->add('commissionTTC')
+            #->add('commissionTTC')
         ;
     }
 
@@ -44,4 +44,14 @@ class TransactionType extends AbstractType
             'data_class' => Transaction::class,
         ]);
     }
+
+    # public function recherche_par_date($datedebut, $datefin): array 
+    #     $qb = $this->createQueryBuilder('transaction')
+    #         ->andWhere('transaction.dateEnvoie >= :dateEnvoie')
+    #         ->andWhere('transaction.dateEnvoie <= :dateEnvoie')
+    #         ->setParameter('dateEnvoie', $datedebut)
+    #         ->setParameter('dateEnvoie', $datefin)
+    #         ->orderBy('transaction.datedebut', 'ASC')
+    #         
+
 }

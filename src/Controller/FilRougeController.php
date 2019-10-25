@@ -15,6 +15,7 @@ use App\Repository\ProfilRepository;
 use App\Repository\PartenaireRepository;
 use App\Repository\UtilisateurRepository;
 use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -42,22 +43,13 @@ class FilRougeController extends AbstractFOSRestController
     }
 
 
-    /**
-     * @Route("/lister/user", name="lister_user")
-     */
-    public function index()
-    {
-        $repo = $this->getDoctrine()->getRepository(Utilisateur::class);
-        $user = $repo->findAll();
-        return $this->handleView($this->view($user));
-    }
 
-
+    
     /**
-     * @Route("/ajouter/partenaire", name="ajouter_les_3", methods={"POST"})
+     * @Route("/ajouter/partenaire", name="ajouter_les_3", methods={"POST","GET"})
      * @IsGranted({"ROLE_Wari", "ROLE_Admin-Partenaire", "ROLE_Partenaire", "ROLE_Super-Admin"}, message="Vous n'avez pas les droits pour créer un new utilisateur")
      */
-    public function ajout(Request $request, UserPasswordEncoderInterface $passwordEncoder, ProfilRepository $profilRepository, PartenaireRepository $partenaireRepository, CompteRepository $compteRepository)
+    public function ajout(Request $request, UserPasswordEncoderInterface $passwordEncoder, ProfilRepository $profilRepository, PartenaireRepository $partenaireRepository, CompteRepository $compteRepository, UtilisateurRepository $utilisateurRepository)
     {
         $user = new Utilisateur();
         $form = $this->createForm(UtilisateurType::class, $user);
@@ -90,10 +82,18 @@ class FilRougeController extends AbstractFOSRestController
 
             case 'Super-Admin':
                 $user->setRoles(["ROLE_Super-Admin"]);
+                $parte = $partenaireRepository->findByNinea(2019201920190);
+                $user->setPartenaire($parte[0]);
+                $comp = $compteRepository->findByNumeroCompte(2019201920190);
+                $user->setPartenaire($comp[0]);
                 break;
 
             case 'Caissier':
                 $user->setRoles(["ROLE_Caissier"]);
+                $parte = $partenaireRepository->findByNinea(2019201920190);
+                $user->setPartenaire($parte[0]);
+                $comp = $compteRepository->findByNumeroCompte(2019201920190);
+                $user->setPartenaire($comp[0]);
                 break;
             
             case 'Utilisateur':
@@ -172,7 +172,7 @@ class FilRougeController extends AbstractFOSRestController
         }
         return $this->json([
             'status' => 500,
-            'message0' =>'Une erreurs s\'est produite: il y\'a des champs manquantes ou le profil existe déja'
+            'message' =>'Une erreurs s\'est produite: il y\'a des champs manquantes ou le profil existe déja'
         ]);
 
     }
@@ -180,50 +180,58 @@ class FilRougeController extends AbstractFOSRestController
     /**
      * @Route("/lister/user", name="lister_user", methods={"POST", "GET"})
      */
-    public function listeruser(UtilisateurRepository $utilisateurRepository) : Response
+    public function listeruser(UtilisateurRepository $utilisateurRepository, SerializerInterface $serializer)
     {
        $user = $utilisateurRepository->findAll();
-       $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
-       $normalizers = [new ObjectNormalizer()];
-       $serializer = new Serializer($normalizers, $encoders);
+       $data = $serializer->serialize($user, 'json', ['groups' => ['utilisateur']]);
+    
        
-       // Serialize your object in Json
-       $jsonObject = $serializer->serialize($user, 'json', [
-           'circular_reference_handler' => function ($object) {
-               return $object->getId();
-           }
-       ]);
-       
-       // For instance, return a Response with encoded Json
-       return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        );
     }
 
 
     /**
      * @Route("/lister/partenaire", name="lister_partenaire", methods={"POST", "GET"})
+     * @IsGranted({"ROLE_Wari","ROLE_Super-Admin"}, message="Vous n'avez pas les droits pour lister les partenaires")
      */
-    public function listerpartenaire(PartenaireRepository $partenaireRepository) : Response
+    public function listerpartenaire(PartenaireRepository $partenaireRepository, SerializerInterface $serializer)
     {
        $partenaire = $partenaireRepository->findAll();
-       $encoders = [new JsonEncoder()]; // If no need for XmlEncoder
-       $normalizers = [new ObjectNormalizer()];
-       $serializer = new Serializer($normalizers, $encoders);
+       $data = $serializer->serialize($partenaire, 'json', ['groups' => ['partenaire']]);
+    
        
-       // Serialize your object in Json
-       $jsonObject = $serializer->serialize($partenaire, 'json', [
-           'circular_reference_handler' => function ($object) {
-               return $object->getId();
-           }
-       ]);
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        );
+    }
+
+    /**
+    *@Route("/lister/user/partenaire", name="Liseter", methods={"POST", "GET"})
+    *@IsGranted({"ROLE_Partenaire","ROLE_Admin-Partenaire"}, message="Vous n'avez pas les droits pour lister les users des partenaires")
+    */
+    public function listerUserPartenaire(UtilisateurRepository $UtilisateurRepository, SerializerInterface $serializer)
+    {
+        $user = $this->getUser()->getPartenaire()->getUtilisateurs();
+
+        $data = $serializer->serialize($user, 'json', ['groups' => ['utilisateur']]);
+    
        
-       // For instance, return a Response with encoded Json
-       return new Response($jsonObject, 200, ['Content-Type' => 'application/json']);
+        return new Response(
+           $data,200,[
+               'Content-Type' => 'application/json'
+           ]
+        );
     }
 
 
-
     /**
-     * @Route("/login", name="login", methods={"POST"})
+     * @Route("/login", name="login", methods={"POST","GET"})
      * @param JWTEncoderInterface $JWTEncoder
      * @param JsonResponse
      * @throws \Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTEncodeFailureException
@@ -235,6 +243,13 @@ class FilRougeController extends AbstractFOSRestController
         $user = $this->getDoctrine()->getRepository(Utilisateur::class)->findOneBy([
             'username' => $values->username,
         ]);
+        if (!$user) {
+            $data = [
+                'status135' => 404,
+                'message135' => 'Cet Utilisateur n\'existe pas'
+            ];
+            return new JsonResponse($data,404);
+        }
         if (!$user->getStatut()) {
             $data = [
                 'status135' => 404,
@@ -251,7 +266,8 @@ class FilRougeController extends AbstractFOSRestController
             return new JsonResponse($data,404);
         }
         $token = $JWTEncoder->encode([
-                'email' => $user->getEmail(),
+                'username' => $user->getUsername(),
+                'roles' => $user->getRoles(),
                 'exp' => time() + 3600 // 1 hour expiration
             ]);
         return $this->json([

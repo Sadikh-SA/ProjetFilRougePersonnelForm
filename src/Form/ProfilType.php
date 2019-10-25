@@ -20,6 +20,7 @@ class ProfilType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Profil::class,
+            'csrf_protection' =>false
         ]);
     }
 }
